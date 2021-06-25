@@ -15,6 +15,7 @@ import database from "./database.json";
 import levels from "./levels.json";
 import calculator from "./calculator";
 import recognize from "./readText";
+import { useEffect } from "react";
 
 const INTERVAL = 10;
 
@@ -49,8 +50,8 @@ function MissionMode(props: {
         <MenuItem key="Normal" value="Normal">
           Normal
         </MenuItem>
-        <MenuItem key="Arbitrarion" value="Arbitrarion">
-          Arbitrarion
+        <MenuItem key="Arbitration" value="Arbitration">
+          Arbitration
         </MenuItem>
         <MenuItem key="SteelPath" value="SteelPath">
           Steel Path
@@ -329,10 +330,15 @@ function App() {
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     let round = parseInt(event.target.value);
+    round = round >= 1 ? round : 1;
+    setOcrResult(true);
     setRound(round);
-    let level = calcLevelByRound(location, missionMode, round);
-    setLevel(level);
   };
+
+  useEffect(() => {
+    let level = calcCurrentLevel(location, missionMode, round);
+    setLevel(level);
+  }, [location, missionMode, round]);
 
   const updateDemolisherStats = async function () {
     window.myAPI.requestScreenshot().then(async (result) => {
@@ -341,7 +347,7 @@ function App() {
       if (round !== null) {
         setOcrResult(true);
         setRound(round);
-        let level = calcLevelByRound(location, missionMode, round);
+        let level = calcCurrentLevel(location, missionMode, round);
         setLevel(level);
       } else {
         setOcrResult(false);
@@ -372,7 +378,7 @@ function App() {
   );
 }
 
-let calcLevelByRound = function (
+let calcCurrentLevel = function (
   location: string,
   missionMode: string,
   round: number
@@ -386,7 +392,7 @@ let calcLevelByRound = function (
         (mission) => mission.location === location
       );
       level = mission!.level;
-      if (missionMode === "Steel Path") {
+      if (missionMode === "SteelPath") {
         level += 100;
       }
     }
