@@ -78,14 +78,14 @@ app.whenReady().then(() => {
     let dataURL = "";
     for (let source of sources) {
       if (source.name === "Screen 1") {
-        let jpeg = source.thumbnail.toJPEG(85);
+        let jpeg = source.thumbnail.toPNG();
         let image = await Jimp.read(jpeg);
         dataURL = await image
           .crop(0, 0, 480, 640)
           .grayscale()
-          .getBase64Async(Jimp.MIME_JPEG);
+          .getBase64Async(Jimp.MIME_PNG);
       }
     }
-    return Promise.resolve({ message: dataURL });
+    return Promise.resolve({ imgData: dataURL });
   });
 });

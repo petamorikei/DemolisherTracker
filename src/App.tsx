@@ -1,6 +1,5 @@
 import * as React from "react";
 import "@fontsource/roboto";
-import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -16,7 +15,6 @@ import database from "./database.json";
 import levels from "./levels.json";
 import calculator from "./calculator";
 import recognize from "./readText";
-import testImage from "./testImg.json";
 
 const INTERVAL = 10;
 
@@ -83,7 +81,7 @@ function AutoMode(props: {
 
 function Level(props: { level: number }) {
   return (
-    <Typography variant="h5" align="left">
+    <Typography variant="h3" align="center">
       Lv{props.level}
     </Typography>
   );
@@ -120,14 +118,6 @@ const scanRoundText = async function (image: string) {
   return round;
 };
 
-function OCRTest() {
-  return (
-    <Button variant="contained" onClick={() => scanRoundText(testImage.mono)}>
-      Test
-    </Button>
-  );
-}
-
 function Config(props: {
   location: string;
   missionMode: string;
@@ -161,7 +151,6 @@ function Config(props: {
         handleChange={props.handleRoundChange}
       />
       <Level level={props.level} />
-      <OCRTest />
     </Box>
   );
 }
@@ -347,7 +336,7 @@ function App() {
 
   const updateDemolisherStats = async function () {
     window.myAPI.requestScreenshot().then(async (result) => {
-      let round = await scanRoundText(result);
+      let round = await scanRoundText(result.imgData);
       // let round = await scanRoundText(testImage.mono);
       if (round !== null) {
         setOcrResult(true);

@@ -11,5 +11,5 @@ declare global {
  * Provides an application-specific API.
  */
 export type MyAPI = {
-  requestScreenshot: () => Promise<string>;
+  requestScreenshot: () => Promise<{ imgData: string }>;
 };
