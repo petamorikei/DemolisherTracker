@@ -5,6 +5,11 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import Jimp from "jimp";
+import { Buffer } from "buffer";
+
+import testImage from "./testImage";
+
+const USE_TEST_IMAGE = false;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -78,11 +83,15 @@ app.whenReady().then(() => {
     let dataURL = "";
     for (let source of sources) {
       if (source.name === "Screen 1") {
-        let jpeg = source.thumbnail.toPNG();
-        let image = await Jimp.read(jpeg);
+        let pngBuffer = USE_TEST_IMAGE
+          ? Buffer.from(testImage, "base64")
+          : source.thumbnail.toPNG();
+        let image = await Jimp.read(pngBuffer);
+        // TODO: Optimze crop area
         dataURL = await image
           .crop(0, 0, 480, 640)
           .grayscale()
+          .contrast(1)
           .getBase64Async(Jimp.MIME_PNG);
       }
     }
