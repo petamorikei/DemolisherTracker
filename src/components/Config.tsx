@@ -1,9 +1,11 @@
 import { Box } from "@material-ui/core";
+
 import AutoMode from "./AutoMode";
 import Level from "./Level";
-import MissionLocation from "./Location";
+import MissionLocation from "./MissionLocation";
 import MissionMode from "./MissionMode";
 import Round from "./Round";
+import useStyles from "../Styles";
 
 function Config(props: {
   location: string;
@@ -17,8 +19,9 @@ function Config(props: {
   handleAutoModeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleRoundChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const classes = useStyles();
   return (
-    <Box>
+    <Box className={classes.configRoot}>
       <MissionLocation
         location={props.location}
         handleChange={props.handleLocationChange}

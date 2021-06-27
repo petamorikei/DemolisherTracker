@@ -1,4 +1,5 @@
 import { Box, Typography } from "@material-ui/core";
+
 import calculator from "../calculator";
 
 function Stat(props: {
@@ -35,49 +36,49 @@ function Stat(props: {
   );
 
   return (
-    <Box width={1}>
-      <Box display="flex" alignItems="center" height={1 / 4}>
-        <Box flexGrow={1}>
-          <Typography variant="h4" align="left">
+    <Box width={1} marginLeft={1} marginRight={1}>
+      <Box height={2 / 7}>
+        <Typography component="div">
+          <Box fontSize={24} fontWeight="fontWeightBold" alignItems="center">
             {props.demolisher.name}
-          </Typography>
-        </Box>
+          </Box>
+        </Typography>
       </Box>
-      <Box display="flex" alignItems="center" height={1 / 4}>
-        <Box flexGrow={1}>
-          <Typography variant="h5" align="left">
-            Health
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h5" align="right">
-            {health}
-          </Typography>
-        </Box>
+      <Box height={5 / 21}>
+        <Typography component="div">
+          <Box display="flex" alignItems="center">
+            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
+              Health
+            </Box>
+            <Box fontSize={20} fontWeight="fontWeightBold">
+              {health}
+            </Box>
+          </Box>
+        </Typography>
       </Box>
-      <Box display="flex" alignItems="center" height={1 / 4}>
-        <Box flexGrow={1}>
-          <Typography variant="h5" align="left">
-            Armor (Reduction)
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h5" align="right">
-            {armor} ({reduction} %)
-          </Typography>
-        </Box>
+      <Box height={5 / 21}>
+        <Typography component="div">
+          <Box display="flex" alignItems="center">
+            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
+              Armor (Reduction)
+            </Box>
+            <Box fontSize={20} fontWeight="fontWeightBold">
+              {armor} ({reduction} %)
+            </Box>
+          </Box>
+        </Typography>
       </Box>
-      <Box display="flex" alignItems="center" height={1 / 4}>
-        <Box flexGrow={1}>
-          <Typography variant="h5" align="left">
-            Shield
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h5" align="right">
-            {shield}
-          </Typography>
-        </Box>
+      <Box height={5 / 21}>
+        <Typography component="div">
+          <Box display="flex" alignItems="center">
+            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
+              Shield
+            </Box>
+            <Box fontSize={20} fontWeight="fontWeightBold">
+              {shield}
+            </Box>
+          </Box>
+        </Typography>
       </Box>
     </Box>
   );

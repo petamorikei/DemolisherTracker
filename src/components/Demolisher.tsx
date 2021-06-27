@@ -13,7 +13,7 @@ function Demolisher(props: {
   );
   return (
     <Box width={1} display="flex">
-      <img src={demolisher!.image} alt="" />
+      <img src={demolisher!.image} alt="" height={150}/>
       <Stat
         demolisher={demolisher!}
         currentLevel={props.currentLevel}

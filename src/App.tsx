@@ -1,6 +1,6 @@
-import * as React from "react";
+import { Box } from "@material-ui/core";
+import React from "react";
 import "@fontsource/roboto";
-import Box from "@material-ui/core/Box";
 
 import database from "./database.json";
 import levels from "./levels.json";
