@@ -14,7 +14,7 @@ const USE_TEST_IMAGE = false;
 function createWindow() {
   const win = new BrowserWindow({
     width: 600,
-    height: 900,
+    height: 781,
     webPreferences: {
       // contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
@@ -72,30 +72,35 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle("request-screenshot", async (event) => {
-    // TODO: Window名による指定
-    let sources = await desktopCapturer.getSources({
-      types: ["window", "screen"],
-      thumbnailSize: {
-        width: 3840,
-        height: 2160,
-      },
-    });
-    let dataURL = "";
-    for (let source of sources) {
-      if (source.name === "Screen 1") {
-        let pngBuffer = USE_TEST_IMAGE
+    let dataURL: string;
+    let pngBuffer: Buffer;
+    if (USE_TEST_IMAGE) {
+      pngBuffer = Buffer.from(testImage, "base64");
+    } else {
+      let sources = await desktopCapturer.getSources({
+        types: ["window"],
+        thumbnailSize: {
+          width: 3840,
+          height: 2160,
+        },
+      });
+      let source = sources.find((source) => source.name === "Warframe");
+      if (typeof source !== "undefined") {
+        pngBuffer = USE_TEST_IMAGE
           ? Buffer.from(testImage, "base64")
           : source.thumbnail.toPNG();
-        let image = await Jimp.read(pngBuffer);
-        // TODO: Optimze crop area
-        dataURL = await image
-          .crop(0, 0, 480, 640)
-          .grayscale()
-          .contrast(1)
-          .invert()
-          .getBase64Async(Jimp.MIME_PNG);
+      } else {
+        return Promise.resolve({ imgData: null });
       }
     }
+    let image = await Jimp.read(pngBuffer);
+    // TODO: Optimize crop area
+    dataURL = await image
+      .crop(0, 0, 480, 640)
+      .grayscale()
+      .contrast(1)
+      .invert()
+      .getBase64Async(Jimp.MIME_PNG);
     return Promise.resolve({ imgData: dataURL });
   });
 });
