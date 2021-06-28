@@ -92,6 +92,7 @@ app.whenReady().then(() => {
           .crop(0, 0, 480, 640)
           .grayscale()
           .contrast(1)
+          .invert()
           .getBase64Async(Jimp.MIME_PNG);
       }
     }
