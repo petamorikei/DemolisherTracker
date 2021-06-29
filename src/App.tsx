@@ -13,7 +13,12 @@ const INTERVAL = 10;
 const scanRoundText = async function (image: string) {
   let result = await recognize(image);
   let line = result.data.lines.find((line) => line.text.startsWith("ROUND"));
-  console.log(line);
+  if (typeof line === "undefined") {
+    console.log(image);
+    console.log(result.data);
+  } else {
+    console.log(line.text, line.confidence);
+  }
   let round =
     typeof line !== "undefined"
       ? parseInt(line.text.replace(/[^0-9]/g, ""))
