@@ -8,5 +8,5 @@ export const missionMap = new Map<MissionName, Mission>([
   [MissionName.GANYMEDE_JUPITER, new Mission(MissionName.GANYMEDE_JUPITER)],
   [MissionName.KAPPA_SEDNA, new Mission(MissionName.KAPPA_SEDNA)],
   [MissionName.TAMU_KUVA_FORTRESS, new Mission(MissionName.TAMU_KUVA_FORTRESS)],
-  [MissionName.APOLLO_LUA, new Mission(MissionName.TAMU_KUVA_FORTRESS)],
+  [MissionName.APOLLO_LUA, new Mission(MissionName.APOLLO_LUA)],
 ]);
