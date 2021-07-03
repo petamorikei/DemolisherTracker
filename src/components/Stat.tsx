@@ -1,46 +1,13 @@
 import { Box, Typography } from "@material-ui/core";
+import { Demolisher } from "../Demolisher";
 
-import calculator from "../calculator";
-
-function Stat(props: {
-  demolisher: {
-    name: string;
-    faction: string;
-    baseHealth: number;
-    baseArmor: number;
-    baseShield: number;
-    image: string;
-  };
-  currentLevel: number;
-  missionMode: string;
-}) {
-  const missionModeMultiplier = props.missionMode === "SteelPath" ? 2.5 : 1;
-  const health = calculator.calcHealth(
-    props.demolisher.baseHealth,
-    props.currentLevel,
-    1,
-    missionModeMultiplier
-  );
-  const armor = calculator.calcArmor(
-    props.demolisher.baseArmor,
-    props.currentLevel,
-    1,
-    missionModeMultiplier
-  );
-  const reduction = calculator.calcDamageReduction(armor);
-  const shield = calculator.calcShield(
-    props.demolisher.baseShield,
-    props.currentLevel,
-    1,
-    missionModeMultiplier
-  );
-
+export function Stat(props: { demolisher: Demolisher }) {
   return (
     <Box width={1} marginLeft={1} marginRight={1}>
       <Box height={2 / 7}>
         <Typography component="div">
           <Box fontSize={24} fontWeight="fontWeightBold" alignItems="center">
-            {props.demolisher.name}
+            {props.demolisher.displayName} (Lv{props.demolisher.currentLevel})
           </Box>
         </Typography>
       </Box>
@@ -51,7 +18,7 @@ function Stat(props: {
               Health
             </Box>
             <Box fontSize={20} fontWeight="fontWeightBold">
-              {health}
+              {props.demolisher.currentHealth}
             </Box>
           </Box>
         </Typography>
@@ -63,7 +30,8 @@ function Stat(props: {
               Armor (Reduction)
             </Box>
             <Box fontSize={20} fontWeight="fontWeightBold">
-              {armor} ({reduction} %)
+              {props.demolisher.currentArmor} (
+              {props.demolisher.currentDamageReduction} %)
             </Box>
           </Box>
         </Typography>
@@ -75,7 +43,7 @@ function Stat(props: {
               Shield
             </Box>
             <Box fontSize={20} fontWeight="fontWeightBold">
-              {shield}
+              {props.demolisher.currentShield}
             </Box>
           </Box>
         </Typography>
@@ -83,5 +51,3 @@ function Stat(props: {
     </Box>
   );
 }
-
-export default Stat;

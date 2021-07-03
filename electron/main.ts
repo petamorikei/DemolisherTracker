@@ -1,15 +1,16 @@
-import { app, BrowserWindow, ipcMain, desktopCapturer } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import isDev from "electron-is-dev";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
-import Jimp from "jimp";
-import { Buffer } from "buffer";
+import fs from "fs";
 
-import testImage from "./testImage";
-
-const USE_TEST_IMAGE = false;
+const defaultLogPath = path.join(
+  `${process.env.localappdata}`,
+  "Warframe",
+  "EE.log"
+);
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -49,6 +50,18 @@ function createWindow() {
     // win.webContents.openDevTools();
     win.webContents.openDevTools({ mode: "detach" });
   }
+
+  ipcMain.on("watch-eelog", (event, arg) => {
+    console.log("before watch");
+    fs.watch(defaultLogPath, (eventType: string, filename: string | Buffer) => {
+      let log = fs.readFileSync(defaultLogPath, "utf8");
+      win.webContents.send("update", log);
+    });
+  });
+
+  ipcMain.on("unwatch-eelog", (event, arg) => {
+    fs.unwatchFile(defaultLogPath);
+  });
 }
 
 app.whenReady().then(() => {
@@ -69,38 +82,5 @@ app.whenReady().then(() => {
     if (process.platform !== "darwin") {
       app.quit();
     }
-  });
-
-  ipcMain.handle("request-screenshot", async (event) => {
-    let dataURL: string;
-    let pngBuffer: Buffer;
-    if (USE_TEST_IMAGE) {
-      pngBuffer = Buffer.from(testImage, "base64");
-    } else {
-      let sources = await desktopCapturer.getSources({
-        types: ["window"],
-        thumbnailSize: {
-          width: 3840,
-          height: 2160,
-        },
-      });
-      let source = sources.find((source) => source.name === "Warframe");
-      if (typeof source !== "undefined") {
-        pngBuffer = USE_TEST_IMAGE
-          ? Buffer.from(testImage, "base64")
-          : source.thumbnail.toPNG();
-      } else {
-        return Promise.resolve({ imgData: null });
-      }
-    }
-    let image = await Jimp.read(pngBuffer);
-    // TODO: Optimize crop area
-    dataURL = await image
-      .crop(0, 0, 480, 640)
-      .grayscale()
-      .contrast(1)
-      .invert()
-      .getBase64Async(Jimp.MIME_PNG);
-    return Promise.resolve({ imgData: dataURL });
   });
 });

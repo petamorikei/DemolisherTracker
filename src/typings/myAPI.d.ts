@@ -12,4 +12,7 @@ declare global {
  */
 export type MyAPI = {
   requestScreenshot: () => Promise<{ imgData: string }>;
+  watch: () => void;
+  unwatch: () => void;
+  onUpdated: (listener: (file: string) => void) => Electron.IpcRenderer;
 };

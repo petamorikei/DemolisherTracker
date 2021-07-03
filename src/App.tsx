@@ -1,97 +1,123 @@
 import { Box } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import "@fontsource/roboto";
+import _ from "lodash";
 
-import database from "./database.json";
-import levels from "./levels.json";
-import recognize from "./readText";
-import Config from "./components/Config";
-import DemolisherTable from "./components/DemolisherTable";
+import { ConfigBox } from "./components/ConfigBox";
+import { DemolisherTable } from "./components/DemolisherTable";
+import { missionMap } from "./missionMap";
+import { MissionMode } from "./missionModeMode";
+import { MissionName } from "./MissionName";
+import { Mission } from "./Mission";
+import { ParsedLog, parseLog } from "./logParser";
+import { calcCurrentLevel } from "./calculator";
 
-const INTERVAL = 10;
+let isListenerReady = false;
 
-const scanRoundText = async function (image: string) {
-  let result = await recognize(image);
-  let line = result.data.lines.find((line) => line.text.startsWith("ROUND"));
-  if (typeof line === "undefined") {
-    console.log(image);
-    console.log(result.data);
-  } else {
-    console.log(line.text, line.confidence);
-  }
-  let round =
-    typeof line !== "undefined"
-      ? parseInt(line.text.replace(/[^0-9]/g, ""))
-      : null;
-  return round;
-};
-
-let calcCurrentLevel = function (
-  location: string,
-  missionMode: string,
-  round: number
-) {
-  let level: number;
-  if (round < 46) {
-    if (missionMode === "Arbitration") {
-      level = 60;
-    } else {
-      const mission = database.missions.find(
-        (mission) => mission.location === location
-      );
-      level = mission!.level;
-      if (missionMode === "SteelPath") {
-        level += 100;
-      }
-    }
-    for (let i = 0; i < round; i++) {
-      level += levels.levelIncrease[i];
-    }
-  } else {
-    level = 9999;
-  }
-  return level <= 9999 ? level : 9999;
-};
-
-function App() {
-  const [location, setLocation] = React.useState("Olympus (Mars)");
-  const [missionMode, setMissionMode] = React.useState("Normal");
+export function App() {
+  const [missionName, setMissionName] = React.useState<MissionName>(
+    MissionName.OLYMPUS_MARS
+  );
+  const [missionMode, setMissionMode] = React.useState<MissionMode>(
+    MissionMode.NORMAL
+  );
   const [autoMode, setAutoMode] = React.useState(false);
-  const [level, setLevel] = React.useState(15);
-  const [round, setRound] = React.useState(1);
-  const [ocrResult, setOcrResult] = React.useState(true);
+  const [conduitIndex, setConduitIndex] = React.useState(0);
+  const [missionStates, setMissionStates] =
+    React.useState<Map<MissionName, Mission>>(missionMap);
 
-  const [intervalId, setIntervalId] = React.useState<NodeJS.Timeout>();
-
-  const handleLocationChange = function (
+  const handleMissionNameChange = function (
     event: React.ChangeEvent<{ value: unknown }>
   ) {
-    setLocation(event.target.value as string);
+    const missionName = event.target.value as MissionName;
+    setMissionName(missionName);
   };
 
+  /**
+   * Update state of mission mode.
+   * This also updates demolisher's parameter.
+   *
+   * @param {React.ChangeEvent<{ value: unknown }>} event
+   */
   const handleMissionModeChange = function (
     event: React.ChangeEvent<{ value: unknown }>
   ) {
-    setMissionMode(event.target.value as string);
+    let missionMode = event.target.value as MissionMode;
+    Mission.missionMode = missionMode;
+    let newMissionState = _.cloneDeep(missionStates);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [_, mission] of newMissionState) {
+      mission.missionMode = Mission.missionMode;
+      for (const demolisher of mission.demolishers) {
+        demolisher.currentLevel = calcCurrentLevel(
+          mission.startLevel,
+          conduitIndex
+        );
+      }
+    }
+    setMissionMode(missionMode);
+    setMissionStates(newMissionState);
   };
 
+  /**
+   * Toggle auto mode.
+   * When true, it starts watching log.EE and updates UI automatically.
+   * When false, it stops watching log.EE and removes all conduit info from demolisher.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} event
+   */
   const handleAutoModeChange = function (
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     let autoMode = event.target.checked;
     if (autoMode) {
-      updateDemolisherStats();
-      setIntervalId(
-        setInterval(function () {
-          updateDemolisherStats();
-        }, INTERVAL * 1000)
-      );
-    } else {
-      if (typeof intervalId !== "undefined") {
-        clearInterval(intervalId);
+      if (!isListenerReady) {
+        isListenerReady = true;
+        window.myAPI.onUpdated(autoUpdateMissionStates);
+        console.log("listener ready");
       }
+      window.myAPI.watch();
+    } else {
+      window.myAPI.unwatch();
+      let newMissionState = _.cloneDeep(missionStates);
+      for (const demolisher of newMissionState.get(missionName)!.demolishers) {
+        if (typeof demolisher.conduit !== "undefined") {
+          // Remove conduit info
+          demolisher.conduit = undefined;
+        }
+      }
+      setMissionStates(newMissionState);
     }
     setAutoMode(autoMode);
+  };
+
+  const applyLog = function (parsedLog: ParsedLog) {
+    setMissionName(parsedLog.missionName);
+    let conduitDoneCountInRound = parsedLog.conduits.size;
+    let currentConduitIndex =
+      (parsedLog.round - 1) * 4 + conduitDoneCountInRound;
+    let newMissionState = _.cloneDeep(missionStates);
+    // Set conduit info to demolisher if its data in log.
+    // If not, calculate their level.
+    for (const demolisher of newMissionState.get(parsedLog.missionName)!
+      .demolishers) {
+      if (demolisher.displayName in parsedLog.conduits) {
+        demolisher.conduit = parsedLog.conduits.get(demolisher.displayName);
+      } else {
+        let currentLevel = calcCurrentLevel(
+          missionMap.get(parsedLog.missionName)!.startLevel,
+          currentConduitIndex
+        );
+        demolisher.currentLevel = currentLevel;
+      }
+    }
+    setConduitIndex(currentConduitIndex);
+    setMissionStates(newMissionState);
+  };
+
+  const autoUpdateMissionStates = function (log: string) {
+    let result = parseLog(log);
+    applyLog(result);
   };
 
   const handleRoundChange = function (
@@ -99,50 +125,42 @@ function App() {
   ) {
     let round = parseInt(event.target.value);
     round = round >= 1 ? round : 1;
-    setOcrResult(true);
-    setRound(round);
-  };
-
-  React.useEffect(() => {
-    let level = calcCurrentLevel(location, missionMode, round);
-    setLevel(level);
-  }, [location, missionMode, round]);
-
-  const updateDemolisherStats = async function () {
-    window.myAPI.requestScreenshot().then(async (result) => {
-      let round = await scanRoundText(result.imgData);
-      if (round !== null) {
-        setOcrResult(true);
-        setRound(round);
-        let level = calcCurrentLevel(location, missionMode, round);
-        setLevel(level);
-      } else {
-        setOcrResult(false);
+    let currentConduitIndex = (round - 1) * 4;
+    setConduitIndex(currentConduitIndex);
+    let newMissionState = _.cloneDeep(missionStates);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [_, mission] of newMissionState) {
+      let currentLevel = calcCurrentLevel(
+        mission.startLevel,
+        currentConduitIndex
+      );
+      for (const demolisher of mission.demolishers) {
+        demolisher.currentLevel = currentLevel;
       }
-    });
+    }
+    setMissionStates(newMissionState);
   };
+
+  useEffect(() => {
+    console.log(missionStates.get(missionName)?.demolishers);
+  }, [missionStates, missionName]);
 
   return (
     <Box>
-      <Config
-        location={location}
+      <ConfigBox
+        missionName={missionName}
         missionMode={missionMode}
         autoMode={autoMode}
-        level={level}
-        round={round}
-        ocrResult={ocrResult}
-        handleLocationChange={handleLocationChange}
+        conduitDone={conduitIndex}
+        handleLocationChange={handleMissionNameChange}
         handleModeChange={handleMissionModeChange}
         handleAutoModeChange={handleAutoModeChange}
         handleRoundChange={handleRoundChange}
       />
       <DemolisherTable
-        location={location}
-        currentLevel={level}
-        missionMode={missionMode}
+        demolishers={missionStates.get(missionName)!.demolishers}
+        autoMode={autoMode}
       />
     </Box>
   );
 }
-
-export default App;

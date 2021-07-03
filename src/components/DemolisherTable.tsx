@@ -1,33 +1,18 @@
 import { Box, Divider } from "@material-ui/core";
-import Demolisher from "./Demolisher";
+import { Demolisher } from "../Demolisher";
+import { DemolisherBox } from "./DemolisherBox";
 
-import database from "../database.json";
-
-function DemolisherTable(props: {
-  location: string;
-  currentLevel: number;
-  missionMode: string;
-}) {
-  const mission = database.missions.find(
-    (mission) => mission.location === props.location
-  );
-  const demolishers = mission?.enemies;
+export function DemolisherTable(props: { demolishers: Demolisher[], autoMode: boolean }) {
   return (
     <Box id="stats">
-      {demolishers!.map((demolisher) => {
+      {props.demolishers.map((demolisher) => {
         return (
-          <Box key={demolisher}>
+          <Box key={demolisher.displayName}>
             <Divider />
-            <Demolisher
-              name={demolisher}
-              currentLevel={props.currentLevel}
-              missionMode={props.missionMode}
-            />
+            <DemolisherBox demolisher={demolisher} autoMode={props.autoMode}/>
           </Box>
         );
       })}
     </Box>
   );
 }
-
-export default DemolisherTable;

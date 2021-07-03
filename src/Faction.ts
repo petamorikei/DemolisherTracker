@@ -1,0 +1,8 @@
+export enum Faction {
+  GRINEER,
+  CORPUS,
+  INFESTED,
+  OROKIN,
+  SENTIENT,
+  UNAFFILIATED,
+}
