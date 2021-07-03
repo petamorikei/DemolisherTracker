@@ -77,6 +77,7 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
 };
 
 export const parseLog = function (data: string) {
+  console.log("Start parseing", new Date());
   let parseConduitInfo = true;
   let parseTotalConduitsComplete = true;
   let missionName: MissionName | null = null;
@@ -86,6 +87,7 @@ export const parseLog = function (data: string) {
   let latestConduitColor: ConduitColor | null = null;
   let latestDemolisherName: DemolisherName | null = null;
   let conduitMap = new Map<DemolisherName, Conduit>();
+  let stateMap = new Map<ConduitIndex, ConduitState>();
   const lines = data.split("\r\n").reverse();
   for (const line of lines) {
     if (regex.missionName.test(line)) {
@@ -111,36 +113,26 @@ export const parseLog = function (data: string) {
         let conduit = new Conduit();
         conduit.color = latestConduitColor!;
         conduit.index = index;
-        conduit.state = ConduitState.ACTIVE;
+        let state = stateMap.get(index);
+        conduit.state =
+          typeof state !== "undefined" ? state : ConduitState.ACTIVE;
         conduitMap.set(latestDemolisherName!, conduit);
       } else if (regex.completedDefence.test(line)) {
         let index = parseInt(line[line.length - 1]) as ConduitIndex;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [_, conduit] of conduitMap) {
-          if (conduit.index === index) {
-            conduit.state = ConduitState.COMPLETED;
-          }
-        }
+        stateMap.set(index, ConduitState.COMPLETED);
       } else if (regex.debuff.test(line)) {
         // let found = line.match(/[0-9]+/g);
         // let index = parseInt(found![2]);
         // let effectId = parseInt(found![3]);
         // let effect = resolveEffect(effectId);
-        // console.log(line);
       } else if (regex.buff.test(line)) {
         // let found = line.match(/[0-9]+/g);
         // let index = parseInt(found![2]);
         // let effectId = parseInt(found![3]);
         // let effect = resolveEffect(effectId);
-        // console.log(line);
       } else if (regex.failedDefence.test(line)) {
         let index = parseInt(line[line.length - 1]) as ConduitIndex;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [_, conduit] of conduitMap) {
-          if (conduit.index === index) {
-            conduit.state = ConduitState.FAILED;
-          }
-        }
+        stateMap.set(index, ConduitState.FAILED);
       } else if (regex.enemySpawn.test(line)) {
         let identifier = line
           .match(/\/Npc\/[a-zA-Z]+/)![0]

@@ -1,6 +1,6 @@
 export enum ConduitState {
-  INACTIVE,
-  ACTIVE,
-  COMPLETED,
-  FAILED,
+  INACTIVE = "inactive",
+  ACTIVE = "active",
+  COMPLETED = "completed",
+  FAILED = "failed",
 }

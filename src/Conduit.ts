@@ -30,6 +30,10 @@ export class Conduit {
     this._color = color;
   }
 
+  get state() {
+    return this._state;
+  }
+
   set state(state: ConduitState) {
     this._state = state;
   }

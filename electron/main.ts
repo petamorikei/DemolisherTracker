@@ -52,11 +52,16 @@ function createWindow() {
   }
 
   ipcMain.on("watch-eelog", (event, arg) => {
-    console.log("before watch");
-    fs.watch(defaultLogPath, (eventType: string, filename: string | Buffer) => {
-      let log = fs.readFileSync(defaultLogPath, "utf8");
-      win.webContents.send("update", log);
-    });
+    // TODO: Use chokider instead of fs.watchFile()
+    fs.watchFile(
+      defaultLogPath,
+      { interval: 1000 },
+      (curr: fs.Stats, prev: fs.Stats) => {
+        console.log("change detected!");
+        let log = fs.readFileSync(defaultLogPath, "utf8");
+        win.webContents.send("update", log);
+      }
+    );
   });
 
   ipcMain.on("unwatch-eelog", (event, arg) => {

@@ -1,5 +1,5 @@
 import { Box } from "@material-ui/core";
-import React, { useEffect } from "react";
+import React from "react";
 import "@fontsource/roboto";
 import _ from "lodash";
 
@@ -11,6 +11,8 @@ import { MissionName } from "./MissionName";
 import { Mission } from "./Mission";
 import { ParsedLog, parseLog } from "./logParser";
 import { calcCurrentLevel } from "./calculator";
+import { useEffect } from "react";
+import { ConduitState } from "./ConduitState";
 
 let isListenerReady = false;
 
@@ -62,7 +64,7 @@ export function App() {
   /**
    * Toggle auto mode.
    * When true, it starts watching log.EE and updates UI automatically.
-   * When false, it stops watching log.EE and removes all conduit info from demolisher.
+   * When false, it stops watching log.EE and set conduit's state to "inactive".
    *
    * @param {React.ChangeEvent<HTMLInputElement>} event
    */
@@ -74,7 +76,6 @@ export function App() {
       if (!isListenerReady) {
         isListenerReady = true;
         window.myAPI.onUpdated(autoUpdateMissionStates);
-        console.log("listener ready");
       }
       window.myAPI.watch();
     } else {
@@ -82,8 +83,7 @@ export function App() {
       let newMissionState = _.cloneDeep(missionStates);
       for (const demolisher of newMissionState.get(missionName)!.demolishers) {
         if (typeof demolisher.conduit !== "undefined") {
-          // Remove conduit info
-          demolisher.conduit = undefined;
+          demolisher.conduit.state = ConduitState.INACTIVE;
         }
       }
       setMissionStates(newMissionState);
@@ -93,27 +93,47 @@ export function App() {
 
   const applyLog = function (parsedLog: ParsedLog) {
     setMissionName(parsedLog.missionName);
+    let newMissionState = _.cloneDeep(missionStates);
+    // Set conduit info and calculate demolisher's level at their conduit index.
+    for (const [index, conduit] of Array.from(parsedLog.conduits.entries())
+      .reverse()
+      .entries()) {
+      let currentConduitIndex = (parsedLog.round - 1) * 4 + index;
+      let currentLevel = calcCurrentLevel(
+        missionMap.get(parsedLog.missionName)!.startLevel,
+        currentConduitIndex
+      );
+      let demolisher = newMissionState
+        .get(parsedLog.missionName)!
+        .demolishers.find(
+          (demolisher) => demolisher.displayName === conduit[0]
+        )!;
+      demolisher.currentLevel = currentLevel;
+      demolisher.conduit = conduit[1];
+    }
+
+    // Update inactive demolisher's level.
     let conduitDoneCountInRound = parsedLog.conduits.size;
     let currentConduitIndex =
       (parsedLog.round - 1) * 4 + conduitDoneCountInRound;
-    let newMissionState = _.cloneDeep(missionStates);
-    // Set conduit info to demolisher if its data in log.
-    // If not, calculate their level.
-    for (const demolisher of newMissionState.get(parsedLog.missionName)!
-      .demolishers) {
-      if (demolisher.displayName in parsedLog.conduits) {
-        demolisher.conduit = parsedLog.conduits.get(demolisher.displayName);
-      } else {
-        let currentLevel = calcCurrentLevel(
-          missionMap.get(parsedLog.missionName)!.startLevel,
-          currentConduitIndex
-        );
-        demolisher.currentLevel = currentLevel;
-      }
+    for (const demolisher of newMissionState
+      .get(parsedLog.missionName)!
+      .demolishers.filter(
+        (demolisher) => demolisher.conduit.state === ConduitState.INACTIVE
+      )) {
+      demolisher.currentLevel = calcCurrentLevel(
+        missionMap.get(parsedLog.missionName)!.startLevel,
+        currentConduitIndex
+      );
     }
+
     setConduitIndex(currentConduitIndex);
     setMissionStates(newMissionState);
   };
+
+  useEffect(() => {
+    console.log(missionStates);
+  }, [missionStates]);
 
   const autoUpdateMissionStates = function (log: string) {
     let result = parseLog(log);
@@ -140,10 +160,6 @@ export function App() {
     }
     setMissionStates(newMissionState);
   };
-
-  useEffect(() => {
-    console.log(missionStates.get(missionName)?.demolishers);
-  }, [missionStates, missionName]);
 
   return (
     <Box>

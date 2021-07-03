@@ -15,7 +15,7 @@ export class Demolisher {
   private _displayName: DemolisherName;
   private _faction: Faction;
   private _identifier: string;
-  private _conduit: Conduit | undefined;
+  private _conduit: Conduit;
   private _startLevel: number;
   private _baseLevel: number;
   private _baseHealth: number;
@@ -76,7 +76,7 @@ export class Demolisher {
     return this._conduit;
   }
 
-  set conduit(conduit: Conduit | undefined) {
+  set conduit(conduit: Conduit) {
     this._conduit = conduit;
   }
 
