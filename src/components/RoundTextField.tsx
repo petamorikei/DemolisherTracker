@@ -14,7 +14,7 @@ export function RoundTextField(props: {
       error={props.conduitDone < 0 ? true : false}
       disabled={props.autoMode}
       label="Round"
-      value={props.conduitDone / 4 + 1}
+      value={Math.floor(props.conduitDone / 4) + 1}
       onChange={props.handleChange}
       type="number"
       InputLabelProps={{
