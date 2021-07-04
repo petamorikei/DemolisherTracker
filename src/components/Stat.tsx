@@ -1,9 +1,17 @@
 import { Box, Typography } from "@material-ui/core";
+import { ConduitState } from "../ConduitState";
 import { Demolisher } from "../Demolisher";
 
-export function Stat(props: { demolisher: Demolisher }) {
+export function Stat(props: { demolisher: Demolisher; autoMode: boolean }) {
+  let color = "initial";
+  if (
+    props.autoMode &&
+    props.demolisher.conduit.state === ConduitState.INACTIVE
+  ) {
+    color = "gray";
+  }
   return (
-    <Box width={1} marginLeft={1} marginRight={1}>
+    <Box width={1} marginLeft={1} marginRight={1} color={color}>
       <Box height={2 / 7}>
         <Typography component="div">
           <Box fontSize={24} fontWeight="fontWeightBold" alignItems="center">
