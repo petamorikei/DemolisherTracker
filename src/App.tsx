@@ -13,6 +13,7 @@ import { ParsedLog, parseLog } from "./logParser";
 import { calcCurrentLevel } from "./calculator";
 import { useEffect } from "react";
 import { ConduitState } from "./ConduitState";
+import { Conduit } from "./Conduit";
 
 let isListenerReady = false;
 
@@ -64,7 +65,7 @@ export function App() {
   /**
    * Toggle auto mode.
    * When true, it starts watching log.EE and updates UI automatically.
-   * When false, it stops watching log.EE and set conduit's state to "inactive".
+   * When false, it stops watching log.EE and re-initialize conduit.
    *
    * @param {React.ChangeEvent<HTMLInputElement>} event
    */
@@ -83,7 +84,7 @@ export function App() {
       let newMissionState = _.cloneDeep(missionStates);
       for (const demolisher of newMissionState.get(missionName)!.demolishers) {
         if (typeof demolisher.conduit !== "undefined") {
-          demolisher.conduit.state = ConduitState.INACTIVE;
+          demolisher.conduit = new Conduit();
         }
       }
       setMissionStates(newMissionState);

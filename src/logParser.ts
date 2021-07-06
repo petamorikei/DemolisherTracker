@@ -26,6 +26,15 @@ import { regex } from "./regex";
 // 5: REWARDS (host)
 // 6: INTERVAL
 
+enum ModeState {
+  MISSION_SETUP = 1,
+  UNLOCK_DOOR = 2,
+  ARTIFACT_ROUND = 3,
+  ARTIFACT_ROUND_DONE = 4,
+  REWARDS_HOST = 5,
+  INTERVAL = 6,
+}
+
 export interface ParsedLog {
   missionName: MissionName;
   round: number;
@@ -82,7 +91,7 @@ export const parseLog = function (data: string) {
   let parseTotalConduitsComplete = true;
   let missionName: MissionName | null = null;
   let round = 0;
-  let modeState = 0;
+  let modeState: ModeState | null = null;
   let totalConduitsComplete = 0;
   let latestConduitColor: ConduitColor | null = null;
   let latestDemolisherName: DemolisherName | null = null;
@@ -91,6 +100,7 @@ export const parseLog = function (data: string) {
   const lines = data.split("\r\n").reverse();
   for (const line of lines) {
     if (regex.missionName.test(line)) {
+      // If the line matches to missionName, don't need to parse log anymore.
       let missionNameLog = line.split(": ")[3];
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (const [_, missionInfo] of missionInfoMap) {
@@ -100,15 +110,17 @@ export const parseLog = function (data: string) {
       }
       break;
     } else if (regex.modeState.test(line)) {
-      modeState = parseInt(line[line.length - 1]);
-      if (modeState === 3) {
+      modeState = parseInt(line[line.length - 1]) as ModeState;
+      if (modeState === ModeState.ARTIFACT_ROUND) {
+        // If the line matches to ModeState.ARTIFACT_ROUND, don't need to get conduit info of previous rounds anymore.
         parseConduitInfo = false;
         round++;
-      } else if (modeState === 4) {
+      } else if (modeState === ModeState.ARTIFACT_ROUND_DONE) {
         parseTotalConduitsComplete = false;
       }
     } else if (parseConduitInfo) {
       if (regex.startingDefence.test(line)) {
+        // If the line matches to startingDefence, add demolisherName and conduit info to map.
         let index = parseInt(line[line.length - 1]) as ConduitIndex;
         let conduit = new Conduit();
         conduit.color = latestConduitColor!;
@@ -118,6 +130,7 @@ export const parseLog = function (data: string) {
           typeof state !== "undefined" ? state : ConduitState.ACTIVE;
         conduitMap.set(latestDemolisherName!, conduit);
       } else if (regex.completedDefence.test(line)) {
+        // If the line matches to completeDefence, add conduite state and its index to temporal map.
         let index = parseInt(line[line.length - 1]) as ConduitIndex;
         stateMap.set(index, ConduitState.COMPLETED);
       } else if (regex.debuff.test(line)) {
@@ -131,6 +144,7 @@ export const parseLog = function (data: string) {
         // let effectId = parseInt(found![3]);
         // let effect = resolveEffect(effectId);
       } else if (regex.failedDefence.test(line)) {
+        // If the line matches to failedDefence, add conduite state and its index to temporal map.
         let index = parseInt(line[line.length - 1]) as ConduitIndex;
         stateMap.set(index, ConduitState.FAILED);
       } else if (regex.enemySpawn.test(line)) {
