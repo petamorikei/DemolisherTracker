@@ -52,6 +52,9 @@ const isDemolisher = function (identifier: string) {
     identifier = identifier.substring(3);
   } else if (identifier.endsWith("Fortress")) {
     identifier = identifier.slice(0, -8);
+    if (identifier === "DisruptionNox") {
+      identifier += "Agent";
+    }
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, demolisherInfo] of demolisherInfoMap) {
@@ -74,6 +77,9 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
     identifier = identifier.substring(3);
   } else if (identifier.endsWith("Fortress")) {
     identifier = identifier.slice(0, -8);
+    if (identifier === "DisruptionNox") {
+      identifier += "Agent";
+    }
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, demolisherInfo] of demolisherInfoMap) {
@@ -86,7 +92,6 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
 };
 
 export const parseLog = function (data: string) {
-  console.log("Start parseing", new Date());
   let parseConduitInfo = true;
   let parseTotalConduitsComplete = true;
   let missionName: MissionName | null = null;
