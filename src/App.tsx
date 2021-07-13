@@ -101,7 +101,7 @@ export function App() {
       .entries()) {
       let currentConduitIndex = (parsedLog.round - 1) * 4 + index;
       let currentLevel = calcCurrentLevel(
-        missionMap.get(parsedLog.missionName)!.startLevel,
+        missionStates.get(parsedLog.missionName)!.startLevel,
         currentConduitIndex
       );
       let demolisher = newMissionState
@@ -123,7 +123,7 @@ export function App() {
         (demolisher) => demolisher.conduit.state === ConduitState.INACTIVE
       )) {
       demolisher.currentLevel = calcCurrentLevel(
-        missionMap.get(parsedLog.missionName)!.startLevel,
+        missionStates.get(parsedLog.missionName)!.startLevel,
         currentConduitIndex
       );
     }
