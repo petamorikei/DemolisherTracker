@@ -124,7 +124,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
     DemolisherName.DEMOLISHER_MACHINIST,
     {
       displayName: DemolisherName.DEMOLISHER_MACHINIST,
-      identifier: "DisruptionRiotMoaAgent",
+      identifier: "DisruptionCarrusPilotAgent",
       faction: Faction.CORPUS,
       baseHealth: 2000,
       baseArmor: 0,
