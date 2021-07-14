@@ -103,6 +103,7 @@ export const parseLog = function (data: string) {
   let conduitMap = new Map<DemolisherName, Conduit>();
   let stateMap = new Map<ConduitIndex, ConduitState>();
   const lines = data.split("\r\n").reverse();
+
   for (const line of lines) {
     if (regex.missionName.test(line)) {
       // If the line matches to missionName, don't need to parse log anymore.
@@ -170,6 +171,7 @@ export const parseLog = function (data: string) {
       }
     }
   }
+
   return {
     missionName: missionName!,
     round: round,

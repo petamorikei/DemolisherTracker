@@ -16,7 +16,6 @@ export class Demolisher {
   private _faction: Faction;
   private _identifier: string;
   private _conduit: Conduit;
-  private _startLevel: number;
   private _baseLevel: number;
   private _baseHealth: number;
   private _baseArmor: number;
@@ -37,7 +36,6 @@ export class Demolisher {
       this._faction = demolisherInfo.faction;
       this._identifier = demolisherInfo.identifier;
       this._conduit = new Conduit();
-      this._startLevel = 1;
       this._baseLevel = 1;
       this._baseHealth = demolisherInfo.baseHealth;
       this._baseArmor = demolisherInfo.baseArmor;
@@ -78,10 +76,6 @@ export class Demolisher {
 
   set conduit(conduit: Conduit) {
     this._conduit = conduit;
-  }
-
-  set startLevel(startLevel: number) {
-    this._startLevel = startLevel;
   }
 
   get currentLevel() {

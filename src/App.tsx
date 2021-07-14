@@ -11,7 +11,6 @@ import { MissionName } from "./MissionName";
 import { Mission } from "./Mission";
 import { ParsedLog, parseLog } from "./logParser";
 import { calcCurrentLevel } from "./calculator";
-import { useEffect } from "react";
 import { ConduitState } from "./ConduitState";
 import { Conduit } from "./Conduit";
 
@@ -50,7 +49,7 @@ export function App() {
     let newMissionState = _.cloneDeep(missionStates);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [_, mission] of newMissionState) {
-      mission.missionMode = Mission.missionMode;
+      mission.updateDemolisherStats();
       for (const demolisher of mission.demolishers) {
         demolisher.currentLevel = calcCurrentLevel(
           mission.startLevel,
@@ -75,12 +74,14 @@ export function App() {
     let autoMode = event.target.checked;
     if (autoMode) {
       if (!isListenerReady) {
-        isListenerReady = true;
         window.myAPI.onUpdated(autoUpdateMissionStates);
+        isListenerReady = true;
       }
       window.myAPI.watch();
+      console.log("Start watching log.EE");
     } else {
       window.myAPI.unwatch();
+      console.log("Stop watching log.EE");
       let newMissionState = _.cloneDeep(missionStates);
       for (const demolisher of newMissionState.get(missionName)!.demolishers) {
         if (typeof demolisher.conduit !== "undefined") {
@@ -132,12 +133,10 @@ export function App() {
     setMissionStates(newMissionState);
   };
 
-  useEffect(() => {
-    console.log(missionStates);
-  }, [missionStates]);
-
   const autoUpdateMissionStates = function (log: string) {
+    console.log("Detect log.EE changes");
     let result = parseLog(log);
+    console.log(result);
     applyLog(result);
   };
 
