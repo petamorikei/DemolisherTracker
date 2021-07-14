@@ -17,5 +17,8 @@ export const useStyles = makeStyles((theme: Theme) =>
         width: 120,
       },
     },
+    shadow: {
+      textShadow: "1px 1px 0 #000000",
+    },
   })
 );
