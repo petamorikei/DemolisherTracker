@@ -11,47 +11,44 @@ export function Stat(props: { demolisher: Demolisher; autoMode: boolean }) {
     color = "gray";
   }
   return (
-    <Box width={1} marginLeft={1} marginRight={1} color={color}>
+    <Box width={1} marginLeft={1} marginRight={1} paddingTop={1} color={color}>
       <Box height={2 / 7}>
         <Typography component="div">
-          <Box fontSize={24} fontWeight="fontWeightBold" alignItems="center">
+          <Box
+            fontSize={24}
+            fontWeight="fontWeightBold"
+            alignItems="center"
+            textAlign="center"
+          >
             {props.demolisher.displayName} (Lv{props.demolisher.currentLevel})
           </Box>
         </Typography>
       </Box>
-      <Box height={5 / 21}>
+      <Box height={20 / 49}>
         <Typography component="div">
-          <Box display="flex" alignItems="center">
-            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
-              Health
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Box fontSize={40} fontWeight="fontWeightBold" color="#03d4ff">
+              {props.demolisher.currentShield}
             </Box>
-            <Box fontSize={20} fontWeight="fontWeightBold">
+            <Box fontSize={40} fontWeight="fontWeightBold" color="#b42921">
               {props.demolisher.currentHealth}
             </Box>
           </Box>
         </Typography>
       </Box>
-      <Box height={5 / 21}>
+      <Box height={15 / 49}>
         <Typography component="div">
-          <Box display="flex" alignItems="center">
-            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
-              Armor (Reduction)
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Box fontSize={30} fontWeight="fontWeightBold" color="#dea43a">
+              {props.demolisher.currentArmor}
             </Box>
-            <Box fontSize={20} fontWeight="fontWeightBold">
-              {props.demolisher.currentArmor} (
-              {props.demolisher.currentDamageReduction} %)
-            </Box>
-          </Box>
-        </Typography>
-      </Box>
-      <Box height={5 / 21}>
-        <Typography component="div">
-          <Box display="flex" alignItems="center">
-            <Box flexGrow={1} fontSize={20} fontWeight="fontWeightBold">
-              Shield
-            </Box>
-            <Box fontSize={20} fontWeight="fontWeightBold">
-              {props.demolisher.currentShield}
+            <Box
+              fontSize={30}
+              fontWeight="fontWeightBold"
+              color="#757575"
+              marginLeft="0.5em"
+            >
+              ({props.demolisher.currentDamageReduction} %)
             </Box>
           </Box>
         </Typography>
