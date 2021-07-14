@@ -20,6 +20,7 @@ function createWindow() {
       // contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
+    frame: false,
   });
 
   if (isDev) {
@@ -57,7 +58,6 @@ function createWindow() {
       defaultLogPath,
       { interval: 1000 },
       (curr: fs.Stats, prev: fs.Stats) => {
-        console.log("change detected!");
         let log = fs.readFileSync(defaultLogPath, "utf8");
         win.webContents.send("update", log);
       }
