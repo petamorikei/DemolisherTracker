@@ -31,7 +31,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       identifier: "DemoExpiredAgent",
       faction: Faction.GRINEER,
       baseHealth: 1500,
-      baseArmor: 100,
+      baseArmor: 50,
       baseShield: 0,
       imagePath: "./img/DemolisherExpired.png",
     },
