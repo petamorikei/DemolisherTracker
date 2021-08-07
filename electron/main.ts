@@ -15,12 +15,12 @@ const defaultLogPath = path.join(
 function createWindow() {
   const win = new BrowserWindow({
     width: 600,
-    height: 781,
+    height: 726,
     webPreferences: {
       // contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    frame: false,
+    // frame: false,
   });
 
   if (isDev) {
