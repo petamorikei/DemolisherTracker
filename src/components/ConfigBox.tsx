@@ -1,5 +1,5 @@
 import { Box } from "@material-ui/core";
-import { MissionMode } from "../missionModeMode";
+import { MissionMode } from "../missionModeMap";
 import { MissionName } from "../MissionName";
 
 import { useStyles } from "./Styles";

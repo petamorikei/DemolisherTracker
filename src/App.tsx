@@ -6,7 +6,7 @@ import _ from "lodash";
 import { ConfigBox } from "./components/ConfigBox";
 import { DemolisherTable } from "./components/DemolisherTable";
 import { missionMap } from "./missionMap";
-import { MissionMode } from "./missionModeMode";
+import { MissionMode } from "./missionModeMap";
 import { MissionName } from "./MissionName";
 import { Mission } from "./Mission";
 import { ParsedLog, parseLog } from "./logParser";

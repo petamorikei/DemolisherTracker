@@ -1,6 +1,6 @@
 import { missionInfoMap } from "./database/missionInfoMap";
 import { Demolisher } from "./Demolisher";
-import { MissionMode } from "./missionModeMode";
+import { MissionMode } from "./missionModeMap";
 import { MissionName } from "./MissionName";
 
 export class Mission {

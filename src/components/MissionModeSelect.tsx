@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { MissionMode } from "../missionModeMode";
+import { MissionMode } from "../missionModeMap";
 import { useStyles } from "./Styles";
 
 export function MissionModeSelect(props: {
