@@ -1,5 +1,5 @@
 import { Box } from "@material-ui/core";
-import { MissionMode } from "../missionModeMap";
+import { MissionModeName } from "../missionModeName";
 import { MissionName } from "../MissionName";
 
 import { useStyles } from "./Styles";
@@ -10,7 +10,7 @@ import { RoundTextField } from "./RoundTextField";
 
 export function ConfigBox(props: {
   missionName: MissionName;
-  missionMode: MissionMode;
+  missionMode: MissionModeName;
   autoMode: boolean;
   conduitDone: number;
   handleLocationChange: (event: React.ChangeEvent<{ value: unknown }>) => void;

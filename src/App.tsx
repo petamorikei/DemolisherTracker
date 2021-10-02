@@ -6,7 +6,7 @@ import _ from "lodash";
 import { ConfigBox } from "./components/ConfigBox";
 import { DemolisherTable } from "./components/DemolisherTable";
 import { missionMap } from "./missionMap";
-import { MissionMode } from "./missionModeMap";
+import { MissionModeName } from "./missionModeName";
 import { MissionName } from "./MissionName";
 import { Mission } from "./Mission";
 import { ParsedLog, parseLog } from "./logParser";
@@ -20,8 +20,8 @@ export function App() {
   const [missionName, setMissionName] = React.useState<MissionName>(
     MissionName.OLYMPUS_MARS
   );
-  const [missionMode, setMissionMode] = React.useState<MissionMode>(
-    MissionMode.NORMAL
+  const [missionMode, setMissionMode] = React.useState<MissionModeName>(
+    MissionModeName.NORMAL
   );
   const [autoMode, setAutoMode] = React.useState(false);
   const [conduitIndex, setConduitIndex] = React.useState(0);
@@ -44,7 +44,7 @@ export function App() {
   const handleMissionModeChange = function (
     event: React.ChangeEvent<{ value: unknown }>
   ) {
-    let missionMode = event.target.value as MissionMode;
+    let missionMode = event.target.value as MissionModeName;
     Mission.missionMode = missionMode;
     let newMissionState = _.cloneDeep(missionStates);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

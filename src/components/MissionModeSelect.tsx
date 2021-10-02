@@ -1,9 +1,9 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { MissionMode } from "../missionModeMap";
+import { MissionModeName } from "../missionModeName";
 import { useStyles } from "./Styles";
 
 export function MissionModeSelect(props: {
-  missionMode: MissionMode;
+  missionMode: MissionModeName;
   handleChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
 }) {
   const classes = useStyles();
@@ -11,20 +11,20 @@ export function MissionModeSelect(props: {
     <FormControl id="mission-mode" className={classes.formControl}>
       <InputLabel>Mission Mode</InputLabel>
       <Select autoWidth value={props.missionMode} onChange={props.handleChange}>
-        <MenuItem key={MissionMode.NORMAL} value={MissionMode.NORMAL}>
-          {MissionMode.NORMAL}
+        <MenuItem key={MissionModeName.NORMAL} value={MissionModeName.NORMAL}>
+          {MissionModeName.NORMAL}
         </MenuItem>
         <MenuItem
-          key={MissionMode.ARBIRATION}
-          value={MissionMode.ARBIRATION}
+          key={MissionModeName.ARBIRATION}
+          value={MissionModeName.ARBIRATION}
         >
-          {MissionMode.ARBIRATION}
+          {MissionModeName.ARBIRATION}
         </MenuItem>
         <MenuItem
-          key={MissionMode.STEEL_PATH}
-          value={MissionMode.STEEL_PATH}
+          key={MissionModeName.STEEL_PATH}
+          value={MissionModeName.STEEL_PATH}
         >
-          {MissionMode.STEEL_PATH}
+          {MissionModeName.STEEL_PATH}
         </MenuItem>
       </Select>
     </FormControl>
