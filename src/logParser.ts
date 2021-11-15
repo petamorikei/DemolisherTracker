@@ -18,14 +18,6 @@ import { regex } from "./regex";
 // "1841.724 AI [Info]: OnAgentCreated /Npc/SentientAmalgamArtifactAgentC78 Live 14 Spawned 74 Ignored Ticking 11 Paused 3 IgnoredTicking 1 MonitoredTicking 10 AllyLive 1 AllyActive 1 NeutralActive 0";
 // "267.879 AI [Info]: OnAgentCreated /Npc/DisruptionCharger83 Live 20 Spawned 77 Ticking 19 Paused 1 IgnoredTicking 2 MonitoredTicking 17 AllyLive 1 AllyActive 1 NeutralActive 0";
 
-// ModeState
-// 1: MISSION_SETUP
-// 2: UNLOCK_DOOR
-// 3: ARTIFACT_ROUND
-// 4: ARTIFACT_ROUND_DONE
-// 5: REWARDS (host)
-// 6: INTERVAL
-
 enum ModeState {
   MISSION_SETUP = 1,
   UNLOCK_DOOR = 2,
@@ -36,6 +28,7 @@ enum ModeState {
 }
 
 export interface ParsedLog {
+  isDisruption: boolean;
   missionName: MissionName;
   round: number;
   totalConduitsComplete: number;
@@ -94,6 +87,7 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
 export const parseLog = function (data: string) {
   let parseConduitInfo = true;
   let parseTotalConduitsComplete = true;
+  let isDisruption = false;
   let missionName: MissionName | null = null;
   let round = 0;
   let modeState: ModeState | null = null;
@@ -111,6 +105,7 @@ export const parseLog = function (data: string) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (const [_, missionInfo] of missionInfoMap) {
         if (missionInfo.logName === missionNameLog) {
+          isDisruption = true;
           missionName = missionInfo.displayName;
         }
       }
@@ -173,7 +168,8 @@ export const parseLog = function (data: string) {
   }
 
   return {
-    missionName: missionName!,
+    isDisruption: isDisruption,
+    missionName: missionName,
     round: round,
     totalConduitsComplete: totalConduitsComplete,
     conduits: conduitMap,

@@ -137,7 +137,9 @@ export function App() {
     console.log("Detect log.EE changes");
     let result = parseLog(log);
     console.log(result);
-    applyLog(result);
+    if (result.isDisruption) {
+      applyLog(result);
+    }
   };
 
   const handleRoundChange = function (

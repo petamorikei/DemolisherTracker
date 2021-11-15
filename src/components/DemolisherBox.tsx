@@ -24,13 +24,13 @@ export function DemolisherBox(props: {
   let conduitColor = props.demolisher.conduit.color;
   let conduitSymbol: string;
   if (conduitColor === ConduitColor.BLUE) {
-    conduitSymbol = "./img/conduit_blue.png";
+    conduitSymbol = "./img/conduit/blue.png";
   } else if (conduitColor === ConduitColor.CYAN) {
-    conduitSymbol = "./img/conduit_cyan.png";
+    conduitSymbol = "./img/conduit/cyan.png";
   } else if (conduitColor === ConduitColor.RED) {
-    conduitSymbol = "./img/conduit_red.png";
+    conduitSymbol = "./img/conduit/red.png";
   } else if (conduitColor === ConduitColor.WHITE) {
-    conduitSymbol = "./img/conduit_white.png";
+    conduitSymbol = "./img/conduit/white.png";
   } else {
     conduitSymbol = "";
   }

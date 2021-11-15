@@ -21,7 +21,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2500,
       baseArmor: 50,
       baseShield: 0,
-      imagePath: "./img/DemolisherDevourer.png",
+      imagePath: "./img/enemy/DemolisherDevourer.png",
     },
   ],
   [
@@ -33,7 +33,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 1500,
       baseArmor: 50,
       baseShield: 0,
-      imagePath: "./img/DemolisherExpired.png",
+      imagePath: "./img/enemy/DemolisherExpired.png",
     },
   ],
   [
@@ -45,7 +45,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 200,
       baseShield: 0,
-      imagePath: "./img/DemolisherBailiff.png",
+      imagePath: "./img/enemy/DemolisherBailiff.png",
     },
   ],
   [
@@ -57,7 +57,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 200,
       baseShield: 0,
-      imagePath: "./img/DemolisherHeavyGunner.png",
+      imagePath: "./img/enemy/DemolisherHeavyGunner.png",
     },
   ],
   [
@@ -69,7 +69,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2500,
       baseArmor: 50,
       baseShield: 0,
-      imagePath: "./img/DemolisherNox.png",
+      imagePath: "./img/enemy/DemolisherNox.png",
     },
   ],
   [
@@ -81,7 +81,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2500,
       baseArmor: 150,
       baseShield: 0,
-      imagePath: "./img/DemolisherKuvaGuardian.png",
+      imagePath: "./img/enemy/DemolisherKuvaGuardian.png",
     },
   ],
   [
@@ -93,7 +93,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 100,
       baseShield: 800,
-      imagePath: "./img/DemolisherAntiMoa.png",
+      imagePath: "./img/enemy/DemolisherAntiMoa.png",
     },
   ],
   [
@@ -105,7 +105,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 100,
       baseShield: 800,
-      imagePath: "./img/DemolisherBursa.png",
+      imagePath: "./img/enemy/DemolisherBursa.png",
     },
   ],
   [
@@ -117,7 +117,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 1500,
       baseArmor: 50,
       baseShield: 700,
-      imagePath: "./img/DemolisherHyena.png",
+      imagePath: "./img/enemy/DemolisherHyena.png",
     },
   ],
   [
@@ -129,7 +129,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 0,
       baseShield: 700,
-      imagePath: "./img/DemolisherMachinist.png",
+      imagePath: "./img/enemy/DemolisherMachinist.png",
     },
   ],
   [
@@ -141,7 +141,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 0,
       baseShield: 800,
-      imagePath: "./img/DemolystHeqet.png",
+      imagePath: "./img/enemy/DemolystHeqet.png",
     },
   ],
   [
@@ -153,7 +153,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 0,
       baseShield: 800,
-      imagePath: "./img/DemolystMachinist.png",
+      imagePath: "./img/enemy/DemolystMachinist.png",
     },
   ],
   [
@@ -165,7 +165,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 0,
       baseShield: 800,
-      imagePath: "./img/DemolystMOA.png",
+      imagePath: "./img/enemy/DemolystMOA.png",
     },
   ],
   [
@@ -177,7 +177,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2000,
       baseArmor: 0,
       baseShield: 800,
-      imagePath: "./img/DemolystSatyr.png",
+      imagePath: "./img/enemy/DemolystSatyr.png",
     },
   ],
   [
@@ -189,7 +189,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 3000,
       baseArmor: 0,
       baseShield: 0,
-      imagePath: "./img/DemolisherBoiler.png",
+      imagePath: "./img/enemy/DemolisherBoiler.png",
     },
   ],
   [
@@ -201,7 +201,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 2500,
       baseArmor: 0,
       baseShield: 0,
-      imagePath: "./img/DemolisherCharger.png",
+      imagePath: "./img/enemy/DemolisherCharger.png",
     },
   ],
   [
@@ -213,7 +213,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 3000,
       baseArmor: 50,
       baseShield: 0,
-      imagePath: "./img/DemolisherJuggernaut.png",
+      imagePath: "./img/enemy/DemolisherJuggernaut.png",
     },
   ],
   [
@@ -225,7 +225,7 @@ export const demolisherInfoMap = new Map<DemolisherName, DemolisherInfo>([
       baseHealth: 3250,
       baseArmor: 0,
       baseShield: 0,
-      imagePath: "./img/DemolisherThrasher.png",
+      imagePath: "./img/enemy/DemolisherThrasher.png",
     },
   ],
 ]);
