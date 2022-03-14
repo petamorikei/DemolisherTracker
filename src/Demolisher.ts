@@ -1,14 +1,14 @@
+import { Conduit } from "./Conduit";
+import { DemolisherName } from "./DemolisherName";
+import { Faction } from "./Faction";
+import { MissionName } from "./MissionName";
 import {
   calcCurrentHealth,
   calcCurrentArmor,
   calcCurrentDamageReduction,
   calcCurrentShield,
 } from "./calculator";
-import { Conduit } from "./Conduit";
 import { demolisherInfoMap } from "./database/demolisherInfoMap";
-import { DemolisherName } from "./DemolisherName";
-import { Faction } from "./Faction";
-import { MissionName } from "./MissionName";
 
 export class Demolisher {
   static statusMultiplier = 1;

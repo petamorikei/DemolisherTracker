@@ -1,12 +1,12 @@
 import { Box } from "@material-ui/core";
-import { MissionModeName } from "../missionModeName";
-import { MissionName } from "../MissionName";
 
-import { useStyles } from "./Styles";
+import { MissionName } from "../MissionName";
+import { MissionModeName } from "../missionModeName";
 import { AutoModeSwitch } from "./AutoModeSwitch";
-import { MissionNameSelect } from "./MissionNameSelect";
 import { MissionModeSelect } from "./MissionModeSelect";
+import { MissionNameSelect } from "./MissionNameSelect";
 import { RoundTextField } from "./RoundTextField";
+import { useStyles } from "./Styles";
 
 export function ConfigBox(props: {
   missionName: MissionName;

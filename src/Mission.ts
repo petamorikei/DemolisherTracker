@@ -1,7 +1,7 @@
-import { missionInfoMap } from "./database/missionInfoMap";
 import { Demolisher } from "./Demolisher";
-import { MissionModeName } from "./missionModeName";
 import { MissionName } from "./MissionName";
+import { missionInfoMap } from "./database/missionInfoMap";
+import { MissionModeName } from "./missionModeName";
 
 export class Mission {
   static missionMode = MissionModeName.NORMAL;

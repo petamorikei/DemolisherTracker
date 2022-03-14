@@ -8,8 +8,6 @@
     "rootDir": "../",
     "noEmitOnError": true,
     "esModuleInterop": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types"]
   }
 }

@@ -1,4 +1,5 @@
 import { FormControlLabel, Switch } from "@material-ui/core";
+
 import { useStyles } from "./Styles";
 
 export function AutoModeSwitch(props: {

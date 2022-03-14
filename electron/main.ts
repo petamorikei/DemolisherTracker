@@ -1,10 +1,10 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import * as path from "path";
-import isDev from "electron-is-dev";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
+import isDev from "electron-is-dev";
 import fs from "fs";
+import * as path from "path";
 
 const defaultLogPath = path.join(
   `${process.env.localappdata}`,
