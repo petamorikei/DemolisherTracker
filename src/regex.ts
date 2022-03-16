@@ -1,6 +1,6 @@
 export const regex = {
   missionName:
-    /^([0-9.]+) Script \[Info\]: MissionIntro.lua: MissionName: ([^\r\n ]+)/,
+    /^([0-9.]+) Script \[Info\]: ThemedSquadOverlay.lua: Mission name: ([^\r\n ]+)/,
   modeState:
     /^([0-9.]+) Script \[Info\]: SentientArtifactMission.lua: ModeState = [0-9]/,
   buff: /^([0-9.]+) Script \[Info\]: SentientArtifactMission.lua: Disruption: Randomized buff for area [1234]: [0-9]+/,
@@ -15,4 +15,7 @@ export const regex = {
   totalConduitsComplete:
     /^([0-9.]+) Script \[Info\]: SentientArtifactMission.lua: Disruption: Total artifacts complete so far this mission: [0-9]+/,
   enemySpawn: /^([0-9.]+).*AI \[Info\]: OnAgentCreated ([^\r\n ]+)/,
+  endOfMatch:
+    /^([0-9.]+) Script \[Info\]: ExtractionTimer.lua: EOM: All players extracting/,
+  missionFailed: /^([0-9.]+) Script \[Info\]: EndOfMatch.lua: Mission Failed/,
 };

@@ -1,6 +1,6 @@
 import { Demolisher } from "./Demolisher";
 import { MissionName } from "./MissionName";
-import { missionInfoMap } from "./database/missionInfoMap";
+import { missionInfoRecord } from "./database/missionInfoRecord";
 import { MissionModeName } from "./missionModeName";
 
 export class Mission {
@@ -10,14 +10,14 @@ export class Mission {
   private _demolishers: Demolisher[];
 
   constructor(missionName: MissionName) {
-    let missionInfo = missionInfoMap.get(missionName);
+    const missionInfo = missionInfoRecord[missionName];
     if (typeof missionInfo === "undefined") {
       throw new Error(`${missionName} does NOT exist.`);
     } else {
-      this._displayName = missionInfo.displayName;
+      this._displayName = missionInfo.name;
       this._startLevel = missionInfo.startLevel;
       this._demolishers = missionInfo.demolishers.map(
-        (demolisherName) => new Demolisher(demolisherName, this._displayName)
+        (demolisherName) => new Demolisher(demolisherName)
       );
       for (const demolisher of this._demolishers) {
         demolisher.currentLevel = this._startLevel;
@@ -28,19 +28,16 @@ export class Mission {
   /**
    * Update demolisher's start level and status multiplier.
    * This method needs to be called when missionMode is changed.
-   *
-   * @memberof Mission
    */
   updateDemolisherStats() {
     if (Mission.missionMode === MissionModeName.NORMAL) {
-      this._startLevel = missionInfoMap.get(this._displayName)!.startLevel;
+      this._startLevel = missionInfoRecord[this._displayName].startLevel;
       Demolisher.statusMultiplier = 1;
     } else if (Mission.missionMode === MissionModeName.ARBIRATION) {
       this._startLevel = 60;
       Demolisher.statusMultiplier = 1;
-    } else if (Mission.missionMode === MissionModeName.STEEL_PATH) {
-      this._startLevel =
-        missionInfoMap.get(this._displayName)!.startLevel + 100;
+    } else if (Mission.missionMode === MissionModeName.THE_STEEL_PATH) {
+      this._startLevel = missionInfoRecord[this._displayName].startLevel + 100;
       Demolisher.statusMultiplier = 2.5;
     }
   }

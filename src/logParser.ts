@@ -1,9 +1,9 @@
-import { Conduit, ConduitColor, ConduitIndex } from "./Conduit";
-import { ConduitState } from "./ConduitState";
+import { Conduit, ConduitColor, ConduitIndex, ConduitState } from "./Conduit";
 import { DemolisherName } from "./DemolisherName";
 import { MissionName } from "./MissionName";
-import { demolisherInfoMap } from "./database/demolisherInfoMap";
-import { missionInfoMap } from "./database/missionInfoMap";
+import { demolisherInfoRecord } from "./database/demolisherInfoRecord";
+import { missionInfoRecord } from "./database/missionInfoRecord";
+import { MissionModeName } from "./missionModeName";
 import { regex } from "./regex";
 
 // Log sample
@@ -27,20 +27,24 @@ enum ModeState {
   INTERVAL = 6,
 }
 
-export interface ParsedLog {
-  isDisruption: boolean;
-  missionName: MissionName;
-  round: number;
-  totalConduitsComplete: number;
-  conduits: Map<DemolisherName, Conduit>;
-}
+export type ParseResult =
+  | {
+      isDisruption: true;
+      missionName: MissionName;
+      missionMode: MissionModeName;
+      round: number;
+      totalConduitsComplete: number;
+      conduits: Map<DemolisherName, Conduit>;
+    }
+  | {
+      isDisruption: false;
+    };
 
 const isConduit = function (identifier: string) {
   return identifier.startsWith("SentientAmalgamArtifactAgent");
 };
 
 const isDemolisher = function (identifier: string) {
-  let result = false;
   if (identifier.startsWith("Lua")) {
     identifier = identifier.substring(3);
   } else if (identifier.endsWith("Fortress")) {
@@ -49,14 +53,10 @@ const isDemolisher = function (identifier: string) {
       identifier += "Agent";
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  for (const [_, demolisherInfo] of demolisherInfoMap) {
-    if (demolisherInfo.identifier === identifier) {
-      result = true;
-      break;
-    }
-  }
-  return result;
+
+  return Object.values(demolisherInfoRecord).some((demolisherInfo) => {
+    demolisherInfo.identifier === identifier;
+  });
 };
 
 // const resolveEffect = function (effectId: number) {
@@ -64,8 +64,6 @@ const isDemolisher = function (identifier: string) {
 // };
 
 const resolveIdentifierToDisplayName = function (identifier: string) {
-  // Temporal initialization
-  let demolisherName = DemolisherName.DEMOLISHER_ANTI_MOA;
   if (identifier.startsWith("Lua")) {
     identifier = identifier.substring(3);
   } else if (identifier.endsWith("Fortress")) {
@@ -74,42 +72,58 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
       identifier += "Agent";
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  for (const [_, demolisherInfo] of demolisherInfoMap) {
-    if (demolisherInfo.identifier === identifier) {
-      demolisherName = demolisherInfo.displayName;
-      break;
-    }
-  }
-  return demolisherName;
+
+  // TODO: Avoid using MOA
+  return (
+    Object.values(demolisherInfoRecord).find((demolisherInfo) => {
+      demolisherInfo.identifier === identifier;
+    })?.displayName || DemolisherName.DEMOLISHER_ANTI_MOA
+  );
 };
 
 export const parseLog = function (data: string) {
   let parseConduitInfo = true;
   let parseTotalConduitsComplete = true;
-  let isDisruption = false;
-  let missionName: MissionName | null = null;
   let round = 0;
   let modeState: ModeState | null = null;
   let totalConduitsComplete = 0;
   let latestConduitColor: ConduitColor | null = null;
   let latestDemolisherName: DemolisherName | null = null;
-  let conduitMap = new Map<DemolisherName, Conduit>();
-  let stateMap = new Map<ConduitIndex, ConduitState>();
-  const lines = data.split("\r\n").reverse();
+  let latestMissionType = "";
+  const conduitMap = new Map<DemolisherName, Conduit>();
+  const stateMap = new Map<ConduitIndex, ConduitState>();
+  const reversedLines = data.split("\r\n").reverse();
 
-  for (const line of lines) {
-    if (regex.missionName.test(line)) {
+  for (const line of reversedLines) {
+    if (line.startsWith("    missionType=")) {
+      latestMissionType = line.split("=").at(-1) || "N/A";
+    } else if (regex.missionName.test(line)) {
       // If the line matches to missionName, don't need to parse log anymore.
-      let missionNameLog = line.split(": ")[3];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      for (const [_, missionInfo] of missionInfoMap) {
-        if (missionInfo.logName === missionNameLog) {
-          isDisruption = true;
-          missionName = missionInfo.displayName;
+      const missionNameLog = line.split(": ")[3];
+      for (const missionInfo of Object.values(missionInfoRecord)) {
+        if (
+          missionNameLog.startsWith(missionInfo.name) &&
+          latestMissionType === "MT_ARTIFACT"
+        ) {
+          const [missionName, missionMode] = missionNameLog.split(" - ");
+          return {
+            isDisruption: true,
+            missionName: missionName,
+            missionMode:
+              missionMode === "Arbitration"
+                ? MissionModeName.ARBIRATION
+                : missionMode === "THE STEEL PATH"
+                ? MissionModeName.THE_STEEL_PATH
+                : MissionModeName.NORMAL,
+            round: round,
+            totalConduitsComplete: totalConduitsComplete,
+            conduits: conduitMap,
+          } as ParseResult;
         }
       }
-      break;
+      return {
+        isDisruption: false,
+      } as ParseResult;
     } else if (regex.modeState.test(line)) {
       modeState = parseInt(line[line.length - 1]) as ModeState;
       if (modeState === ModeState.ARTIFACT_ROUND) {
@@ -122,17 +136,21 @@ export const parseLog = function (data: string) {
     } else if (parseConduitInfo) {
       if (regex.startingDefence.test(line)) {
         // If the line matches to startingDefence, add demolisherName and conduit info to map.
-        let index = parseInt(line[line.length - 1]) as ConduitIndex;
-        let conduit = new Conduit();
-        conduit.color = latestConduitColor!;
+        const index = parseInt(line[line.length - 1]) as ConduitIndex;
+        const conduit = new Conduit();
+        conduit.color = latestConduitColor || undefined;
         conduit.index = index;
-        let state = stateMap.get(index);
+        const state = stateMap.get(index);
         conduit.state =
           typeof state !== "undefined" ? state : ConduitState.ACTIVE;
-        conduitMap.set(latestDemolisherName!, conduit);
+        // TODO: Avoid using MOA
+        conduitMap.set(
+          latestDemolisherName || DemolisherName.DEMOLISHER_ANTI_MOA,
+          conduit
+        );
       } else if (regex.completedDefence.test(line)) {
         // If the line matches to completeDefence, add conduite state and its index to temporal map.
-        let index = parseInt(line[line.length - 1]) as ConduitIndex;
+        const index = parseInt(line[line.length - 1]) as ConduitIndex;
         stateMap.set(index, ConduitState.COMPLETED);
       } else if (regex.debuff.test(line)) {
         // let found = line.match(/[0-9]+/g);
@@ -146,32 +164,32 @@ export const parseLog = function (data: string) {
         // let effect = resolveEffect(effectId);
       } else if (regex.failedDefence.test(line)) {
         // If the line matches to failedDefence, add conduite state and its index to temporal map.
-        let index = parseInt(line[line.length - 1]) as ConduitIndex;
+        const index = parseInt(line[line.length - 1]) as ConduitIndex;
         stateMap.set(index, ConduitState.FAILED);
       } else if (regex.enemySpawn.test(line)) {
-        let identifier = line
-          .match(/\/Npc\/[a-zA-Z]+/)![0]
-          .substring(5)
+        const identifier = line
+          .match(/\/Npc\/[a-zA-Z]+/)
+          ?.at(0)
+          ?.substring(5)
           .replace(/[0-9]+/, "");
-        if (isDemolisher(identifier)) {
-          latestDemolisherName = resolveIdentifierToDisplayName(identifier);
-        } else if (isConduit(identifier)) {
-          latestConduitColor = identifier.slice(-1) as ConduitColor;
+        if (identifier) {
+          if (isDemolisher(identifier)) {
+            latestDemolisherName = resolveIdentifierToDisplayName(identifier);
+          } else if (isConduit(identifier)) {
+            latestConduitColor = identifier.slice(-1) as ConduitColor;
+          }
         }
       }
     } else if (parseTotalConduitsComplete) {
       if (regex.totalConduitsComplete.test(line)) {
-        let found = line.match(/([0-9]+)$/);
-        totalConduitsComplete = parseInt(found![0]);
+        const found = line.match(/([0-9]+)$/);
+        if (found) {
+          totalConduitsComplete = parseInt(found[0]);
+        }
       }
     }
   }
-
   return {
-    isDisruption: isDisruption,
-    missionName: missionName,
-    round: round,
-    totalConduitsComplete: totalConduitsComplete,
-    conduits: conduitMap,
-  } as ParsedLog;
+    isDisruption: false,
+  } as ParseResult;
 };

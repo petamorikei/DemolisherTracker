@@ -33,6 +33,7 @@ function createWindow() {
   // Hot Reloading
   if (isDev) {
     // 'node_modules/.bin/electronPath'
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("electron-reload")(__dirname, {
       electron: path.join(
         __dirname,
@@ -52,19 +53,15 @@ function createWindow() {
     win.webContents.openDevTools({ mode: "detach" });
   }
 
-  ipcMain.on("watch-eelog", (event, arg) => {
+  ipcMain.on("watch-eelog", () => {
     // TODO: Use chokider instead of fs.watchFile()
-    fs.watchFile(
-      defaultLogPath,
-      { interval: 1000 },
-      (curr: fs.Stats, prev: fs.Stats) => {
-        let log = fs.readFileSync(defaultLogPath, "utf8");
-        win.webContents.send("update", log);
-      }
-    );
+    fs.watchFile(defaultLogPath, { interval: 1000 }, () => {
+      const log = fs.readFileSync(defaultLogPath, "utf8");
+      win.webContents.send("update", log);
+    });
   });
 
-  ipcMain.on("unwatch-eelog", (event, arg) => {
+  ipcMain.on("unwatch-eelog", () => {
     fs.unwatchFile(defaultLogPath);
   });
 }

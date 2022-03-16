@@ -1,10 +1,15 @@
-import { ConduitState } from "./ConduitState";
-
 export enum ConduitColor {
   RED = "A",
   BLUE = "B",
   CYAN = "C",
   WHITE = "D",
+}
+
+export enum ConduitState {
+  INACTIVE = "inactive",
+  ACTIVE = "active",
+  COMPLETED = "completed",
+  FAILED = "failed",
 }
 
 export type ConduitIndex = 1 | 2 | 3 | 4;

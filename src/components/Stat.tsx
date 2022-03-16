@@ -1,6 +1,6 @@
 import { Box, Typography } from "@material-ui/core";
 
-import { ConduitState } from "../ConduitState";
+import { ConduitState } from "../Conduit";
 import { Demolisher } from "../Demolisher";
 import { useStyles } from "./Styles";
 

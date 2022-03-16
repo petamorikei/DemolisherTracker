@@ -1,14 +1,13 @@
 import { Conduit } from "./Conduit";
 import { DemolisherName } from "./DemolisherName";
 import { Faction } from "./Faction";
-import { MissionName } from "./MissionName";
 import {
-  calcCurrentHealth,
   calcCurrentArmor,
   calcCurrentDamageReduction,
+  calcCurrentHealth,
   calcCurrentShield,
 } from "./calculator";
-import { demolisherInfoMap } from "./database/demolisherInfoMap";
+import { demolisherInfoRecord } from "./database/demolisherInfoRecord";
 
 export class Demolisher {
   static statusMultiplier = 1;
@@ -27,8 +26,8 @@ export class Demolisher {
   private _currentShield: number;
   private _imagePath: string;
 
-  constructor(displayName: DemolisherName, location: MissionName) {
-    const demolisherInfo = demolisherInfoMap.get(displayName);
+  constructor(displayName: DemolisherName) {
+    const demolisherInfo = demolisherInfoRecord[displayName];
     if (typeof demolisherInfo === "undefined") {
       throw new Error(`${displayName} does NOT exist`);
     } else {
@@ -85,8 +84,6 @@ export class Demolisher {
   /**
    * Set current level of demolisher.
    * This also updates its health, armor, damage reduction and shield.
-   *
-   * @memberof Demolisher
    */
   set currentLevel(currentLevel: number) {
     this._currentLevel = currentLevel;

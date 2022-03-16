@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 
 import { MissionModeName } from "../missionModeName";
 import { useStyles } from "./Styles";
@@ -22,10 +22,10 @@ export function MissionModeSelect(props: {
           {MissionModeName.ARBIRATION}
         </MenuItem>
         <MenuItem
-          key={MissionModeName.STEEL_PATH}
-          value={MissionModeName.STEEL_PATH}
+          key={MissionModeName.THE_STEEL_PATH}
+          value={MissionModeName.THE_STEEL_PATH}
         >
-          {MissionModeName.STEEL_PATH}
+          {MissionModeName.THE_STEEL_PATH}
         </MenuItem>
       </Select>
     </FormControl>
