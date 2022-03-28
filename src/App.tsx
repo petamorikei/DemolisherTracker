@@ -90,6 +90,7 @@ export function App() {
   const applyLog = function (parseResult: ParseResult) {
     if (parseResult.isDisruption) {
       setMissionName(parseResult.missionName);
+      setMissionMode(parseResult.missionMode);
       const newMissionState = _.cloneDeep(missionStates);
       // Set conduit info and calculate demolisher's level at their conduit index.
       for (const [index, conduit] of Array.from(parseResult.conduits.entries())
