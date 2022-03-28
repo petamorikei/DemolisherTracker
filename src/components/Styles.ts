@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme: Theme) =>
         width: 200,
       },
       "& #mission-mode": {
-        width: 120,
+        width: 180,
       },
     },
     shadow: {
