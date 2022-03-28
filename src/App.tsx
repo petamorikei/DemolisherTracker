@@ -35,17 +35,14 @@ export function App() {
   };
 
   /**
-   * Update state of mission mode.
-   * This also updates demolisher's parameter.
+   * Update mission mode.
    */
-  const handleMissionModeChange = function (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) {
-    const missionMode = event.target.value as MissionModeName;
+  const updateMissionMode = (missionMode: MissionModeName) => {
     Mission.missionMode = missionMode;
     const newMissionState = _.cloneDeep(missionStates);
     for (const mission of Object.values(newMissionState)) {
       mission.updateDemolisherStats();
+      console.log(`MissionMode updated: ${mission.startLevel}`);
       for (const demolisher of mission.demolishers) {
         demolisher.currentLevel = calcCurrentLevel(
           mission.startLevel,
@@ -55,6 +52,17 @@ export function App() {
     }
     setMissionMode(missionMode);
     setMissionStates(newMissionState);
+  };
+
+  /**
+   * Update state of mission mode.
+   * This also updates demolisher's parameter.
+   */
+  const handleMissionModeChange = function (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) {
+    const missionMode = event.target.value as MissionModeName;
+    updateMissionMode(missionMode);
   };
 
   /**
@@ -90,7 +98,7 @@ export function App() {
   const applyLog = function (parseResult: ParseResult) {
     if (parseResult.isDisruption) {
       setMissionName(parseResult.missionName);
-      setMissionMode(parseResult.missionMode);
+      updateMissionMode(parseResult.missionMode);
       const newMissionState = _.cloneDeep(missionStates);
       // Set conduit info and calculate demolisher's level at their conduit index.
       for (const [index, conduit] of Array.from(parseResult.conduits.entries())
