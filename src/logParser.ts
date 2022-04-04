@@ -54,9 +54,9 @@ const isDemolisher = function (identifier: string) {
     }
   }
 
-  return Object.values(demolisherInfoRecord).some((demolisherInfo) => {
-    demolisherInfo.identifier === identifier;
-  });
+  return Object.values(demolisherInfoRecord).some(
+    (demolisherInfo) => demolisherInfo.identifier === identifier
+  );
 };
 
 // const resolveEffect = function (effectId: number) {
@@ -75,9 +75,9 @@ const resolveIdentifierToDisplayName = function (identifier: string) {
 
   // TODO: Avoid using MOA
   return (
-    Object.values(demolisherInfoRecord).find((demolisherInfo) => {
-      demolisherInfo.identifier === identifier;
-    })?.displayName || DemolisherName.DEMOLISHER_ANTI_MOA
+    Object.values(demolisherInfoRecord).find(
+      (demolisherInfo) => demolisherInfo.identifier === identifier
+    )?.displayName || DemolisherName.DEMOLISHER_ANTI_MOA
   );
 };
 
@@ -90,40 +90,41 @@ export const parseLog = function (data: string) {
   let latestConduitColor: ConduitColor | null = null;
   let latestDemolisherName: DemolisherName | null = null;
   let latestMissionType = "";
+  let parseResult: ParseResult = { isDisruption: false };
   const conduitMap = new Map<DemolisherName, Conduit>();
   const stateMap = new Map<ConduitIndex, ConduitState>();
   const reversedLines = data.split("\r\n").reverse();
 
+  console.group("Parse detail");
   for (const line of reversedLines) {
     if (line.startsWith("    missionType=")) {
       latestMissionType = line.split("=").at(-1) || "N/A";
     } else if (regex.missionName.test(line)) {
       // If the line matches to missionName, don't need to parse log anymore.
       const missionNameLog = line.split(": ")[3];
-      for (const missionInfo of Object.values(missionInfoRecord)) {
-        if (
-          missionNameLog.startsWith(missionInfo.name) &&
-          latestMissionType === "MT_ARTIFACT"
-        ) {
-          const [missionName, missionMode] = missionNameLog.split(" - ");
-          return {
-            isDisruption: true,
-            missionName: missionName,
-            missionMode:
-              missionMode === "Arbitration"
-                ? MissionModeName.ARBIRATION
-                : missionMode === "THE STEEL PATH"
-                ? MissionModeName.THE_STEEL_PATH
-                : MissionModeName.NORMAL,
-            round: round,
-            totalConduitsComplete: totalConduitsComplete,
-            conduits: conduitMap,
-          } as ParseResult;
+      if (latestMissionType === "MT_ARTIFACT") {
+        for (const missionInfo of Object.values(missionInfoRecord)) {
+          if (missionNameLog.startsWith(missionInfo.name)) {
+            const [missionName, missionMode] = missionNameLog.split(" - ");
+            parseResult = {
+              isDisruption: true,
+              missionName: missionName as MissionName,
+              missionMode:
+                missionMode === "Arbitration"
+                  ? MissionModeName.ARBIRATION
+                  : missionMode === "THE STEEL PATH"
+                  ? MissionModeName.THE_STEEL_PATH
+                  : MissionModeName.NORMAL,
+              round: round,
+              totalConduitsComplete: totalConduitsComplete,
+              conduits: conduitMap,
+            };
+            break;
+          }
         }
+      } else {
+        break;
       }
-      return {
-        isDisruption: false,
-      } as ParseResult;
     } else if (regex.modeState.test(line)) {
       modeState = parseInt(line[line.length - 1]) as ModeState;
       if (modeState === ModeState.ARTIFACT_ROUND) {
@@ -189,7 +190,7 @@ export const parseLog = function (data: string) {
       }
     }
   }
-  return {
-    isDisruption: false,
-  } as ParseResult;
+  console.groupEnd();
+
+  return parseResult;
 };
