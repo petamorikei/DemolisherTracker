@@ -5,6 +5,7 @@ import { MissionModeName } from "./missionModeName";
 
 export class Mission {
   static missionMode = MissionModeName.NORMAL;
+  static instances: Mission[] = [];
   private _displayName: MissionName;
   private _startLevel: number;
   private _demolishers: Demolisher[];
@@ -22,6 +23,7 @@ export class Mission {
       for (const demolisher of this._demolishers) {
         demolisher.currentLevel = this._startLevel;
       }
+      Mission.instances.push(this);
     }
   }
 
@@ -29,16 +31,21 @@ export class Mission {
    * Update demolisher's start level and status multiplier.
    * This method needs to be called when missionMode is changed.
    */
-  updateDemolisherStats() {
-    if (Mission.missionMode === MissionModeName.NORMAL) {
-      this._startLevel = missionInfoRecord[this._displayName].startLevel;
-      Demolisher.statusMultiplier = 1;
-    } else if (Mission.missionMode === MissionModeName.ARBIRATION) {
-      this._startLevel = 60;
-      Demolisher.statusMultiplier = 1;
-    } else if (Mission.missionMode === MissionModeName.THE_STEEL_PATH) {
-      this._startLevel = missionInfoRecord[this._displayName].startLevel + 100;
-      Demolisher.statusMultiplier = 2.5;
+  static updateDemolisherStats(missionMode: MissionModeName) {
+    Mission.missionMode = missionMode;
+    for (const mission of Mission.instances) {
+      if (Mission.missionMode === MissionModeName.NORMAL) {
+        mission._startLevel =
+          missionInfoRecord[mission._displayName].startLevel;
+        Demolisher.statusMultiplier = 1;
+      } else if (Mission.missionMode === MissionModeName.ARBIRATION) {
+        mission._startLevel = 60;
+        Demolisher.statusMultiplier = 1;
+      } else if (Mission.missionMode === MissionModeName.THE_STEEL_PATH) {
+        mission._startLevel =
+          missionInfoRecord[mission._displayName].startLevel + 100;
+        Demolisher.statusMultiplier = 2.5;
+      }
     }
   }
 
