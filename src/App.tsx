@@ -39,19 +39,21 @@ export function App() {
    */
   const updateMissionMode = (missionMode: MissionModeName) => {
     Mission.missionMode = missionMode;
+    console.log(`Update mission mode: ${missionMode}`);
     const newMissionState = _.cloneDeep(missionStates);
+    Mission.updateDemolisherStats(missionMode);
     for (const mission of Object.values(newMissionState)) {
-      mission.updateDemolisherStats();
-      console.log(`MissionMode updated: ${mission.startLevel}`);
       for (const demolisher of mission.demolishers) {
         demolisher.currentLevel = calcCurrentLevel(
           mission.startLevel,
           conduitIndex
         );
+        console.log("curr lvl in upd", demolisher.currentLevel);
       }
     }
     setMissionMode(missionMode);
     setMissionStates(newMissionState);
+    console.log(newMissionState);
   };
 
   /**
@@ -67,8 +69,8 @@ export function App() {
 
   /**
    * Toggle auto mode.
-   * When true, it starts watching log.EE and updates UI automatically.
-   * When false, it stops watching log.EE and re-initialize conduit.
+   * When true, it starts watching EE.log and updates UI automatically.
+   * When false, it stops watching EE.log and re-initialize conduit.
    */
   const handleAutoModeChange = function (
     event: React.ChangeEvent<HTMLInputElement>
@@ -80,10 +82,10 @@ export function App() {
         isListenerReady = true;
       }
       window.myAPI.watch();
-      console.log("Start watching log.EE");
+      console.log("Start watching EE.log");
     } else {
       window.myAPI.unwatch();
-      console.log("Stop watching log.EE");
+      console.log("Stop watching EE.log");
       const newMissionState = _.cloneDeep(missionStates);
       for (const demolisher of newMissionState[missionName].demolishers) {
         if (typeof demolisher.conduit !== "undefined") {
@@ -97,9 +99,10 @@ export function App() {
 
   const applyLog = function (parseResult: ParseResult) {
     if (parseResult.isDisruption) {
-      setMissionName(parseResult.missionName);
-      updateMissionMode(parseResult.missionMode);
       const newMissionState = _.cloneDeep(missionStates);
+      setMissionName(parseResult.missionName);
+      Mission.updateDemolisherStats(parseResult.missionMode);
+
       // Set conduit info and calculate demolisher's level at their conduit index.
       for (const [index, conduit] of Array.from(parseResult.conduits.entries())
         .reverse()
@@ -109,11 +112,13 @@ export function App() {
           missionStates[parseResult.missionName].startLevel,
           currentConduitIndex
         );
+        console.log("curr lvl in apply", currentLevel);
         const demolisher = newMissionState[
           parseResult.missionName
         ].demolishers.find(
           (demolisher) => demolisher.displayName === conduit[0]
         );
+        console.log(demolisher);
         if (demolisher) {
           demolisher.currentLevel = currentLevel;
           demolisher.conduit = conduit[1];
@@ -135,14 +140,16 @@ export function App() {
         );
       }
 
+      setMissionMode(parseResult.missionMode);
       setConduitIndex(currentConduitIndex);
       setMissionStates(newMissionState);
+    } else {
+      // TODO: Set something if current mission is not disruption.
     }
-    // TODO: Set something if current mission is not disruption.
   };
 
   const autoUpdateMissionStates = function (log: string) {
-    console.log("Detect log.EE changes");
+    console.log("Detect EE.log changes");
     const result = parseLog(log);
     console.log(result);
     applyLog(result);
