@@ -28,6 +28,7 @@ export function ConfigBox(props: {
       />
       <MissionModeSelect
         missionMode={props.missionMode}
+        autoMode={props.autoMode}
         handleChange={props.handleModeChange}
       />
       <AutoModeSwitch

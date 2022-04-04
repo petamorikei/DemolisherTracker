@@ -5,13 +5,19 @@ import { useStyles } from "./Styles";
 
 export function MissionModeSelect(props: {
   missionMode: MissionModeName;
+  autoMode: boolean;
   handleChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
 }) {
   const classes = useStyles();
   return (
     <FormControl id="mission-mode" className={classes.formControl}>
       <InputLabel>Mission Mode</InputLabel>
-      <Select autoWidth value={props.missionMode} onChange={props.handleChange}>
+      <Select
+        autoWidth
+        disabled={props.autoMode}
+        value={props.missionMode}
+        onChange={props.handleChange}
+      >
         <MenuItem key={MissionModeName.NORMAL} value={MissionModeName.NORMAL}>
           {MissionModeName.NORMAL}
         </MenuItem>
