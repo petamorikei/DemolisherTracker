@@ -6,18 +6,6 @@ import { missionInfoRecord } from "./database/missionInfoRecord";
 import { MissionModeName } from "./missionModeName";
 import { regex } from "./regex";
 
-// Log sample
-// 197.555 Script [Info]: MissionIntro.lua: MissionName: OLYMPUS"
-// 91.348 Script [Info]: SentientArtifactMission.lua: ModeState = 1
-// 1877.286 Script [Info]: SentientArtifactMission.lua: Disruption: Randomized buff for area 2: 34
-// 103.871 Script [Info]: SentientArtifactMission.lua: Disruption: Randomized debuff for area 1: 4
-// 143.571 Script [Info]: SentientArtifactMission.lua: Disruption: Starting defense for artifact 1
-// 176.516 Script [Info]: SentientArtifactMission.lua: Disruption: Completed defense for artifact 1
-// 248.403 Script [Info]: SentientArtifactMission.lua: Disruption: Failed defense for artifact 4
-// 281.990 Script [Info]: SentientArtifactMission.lua: Disruption: Total artifacts complete so far this mission: 3
-// "1841.724 AI [Info]: OnAgentCreated /Npc/SentientAmalgamArtifactAgentC78 Live 14 Spawned 74 Ignored Ticking 11 Paused 3 IgnoredTicking 1 MonitoredTicking 10 AllyLive 1 AllyActive 1 NeutralActive 0";
-// "267.879 AI [Info]: OnAgentCreated /Npc/DisruptionCharger83 Live 20 Spawned 77 Ticking 19 Paused 1 IgnoredTicking 2 MonitoredTicking 17 AllyLive 1 AllyActive 1 NeutralActive 0";
-
 enum ModeState {
   MISSION_SETUP = 1,
   UNLOCK_DOOR = 2,

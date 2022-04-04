@@ -31,29 +31,8 @@ export function App() {
     event: React.ChangeEvent<{ value: unknown }>
   ) {
     const missionName = event.target.value as MissionName;
+    console.log(`Update mission name: ${missionName}`);
     setMissionName(missionName);
-  };
-
-  /**
-   * Update mission mode.
-   */
-  const updateMissionMode = (missionMode: MissionModeName) => {
-    Mission.missionMode = missionMode;
-    console.log(`Update mission mode: ${missionMode}`);
-    const newMissionState = _.cloneDeep(missionStates);
-    Mission.updateDemolisherStats(missionMode);
-    for (const mission of Object.values(newMissionState)) {
-      for (const demolisher of mission.demolishers) {
-        demolisher.currentLevel = calcCurrentLevel(
-          mission.startLevel,
-          conduitIndex
-        );
-        console.log("curr lvl in upd", demolisher.currentLevel);
-      }
-    }
-    setMissionMode(missionMode);
-    setMissionStates(newMissionState);
-    console.log(newMissionState);
   };
 
   /**
@@ -64,7 +43,20 @@ export function App() {
     event: React.ChangeEvent<{ value: unknown }>
   ) {
     const missionMode = event.target.value as MissionModeName;
-    updateMissionMode(missionMode);
+    console.log(`Update mission mode: ${missionMode}`);
+    Mission.missionMode = missionMode;
+    const newMissionStates = _.cloneDeep(missionStates);
+    for (const mission of Object.values(newMissionStates)) {
+      mission.updateDemolisherStats();
+    }
+    for (const mission of Object.values(newMissionStates)) {
+      const currentLevel = calcCurrentLevel(mission.startLevel, conduitIndex);
+      for (const demolisher of mission.demolishers) {
+        demolisher.currentLevel = currentLevel;
+      }
+    }
+    setMissionMode(missionMode);
+    setMissionStates(newMissionStates);
   };
 
   /**
@@ -97,11 +89,42 @@ export function App() {
     setAutoMode(autoMode);
   };
 
+  const handleRoundChange = function (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    let round = parseInt(event.target.value);
+    round = round >= 1 ? round : 1;
+    const currentConduitIndex = (round - 1) * 4;
+    console.log(`Update round: ${round}`);
+    setConduitIndex(currentConduitIndex);
+    const newMissionStates = _.cloneDeep(missionStates);
+    for (const mission of Object.values(newMissionStates)) {
+      const currentLevel = calcCurrentLevel(
+        mission.startLevel,
+        currentConduitIndex
+      );
+      for (const demolisher of mission.demolishers) {
+        demolisher.currentLevel = currentLevel;
+      }
+    }
+    setMissionStates(newMissionStates);
+  };
+
+  const autoUpdateMissionStates = function (log: string) {
+    console.log("Detect EE.log changes");
+    const result = parseLog(log);
+    console.log(result);
+    applyLog(result);
+  };
+
   const applyLog = function (parseResult: ParseResult) {
     if (parseResult.isDisruption) {
       const newMissionState = _.cloneDeep(missionStates);
       setMissionName(parseResult.missionName);
-      Mission.updateDemolisherStats(parseResult.missionMode);
+      Mission.missionMode = missionMode;
+      for (const mission of Object.values(newMissionState)) {
+        mission.updateDemolisherStats();
+      }
 
       // Set conduit info and calculate demolisher's level at their conduit index.
       for (const [index, conduit] of Array.from(parseResult.conduits.entries())
@@ -112,7 +135,6 @@ export function App() {
           missionStates[parseResult.missionName].startLevel,
           currentConduitIndex
         );
-        console.log("curr lvl in apply", currentLevel);
         const demolisher = newMissionState[
           parseResult.missionName
         ].demolishers.find(
@@ -146,33 +168,6 @@ export function App() {
     } else {
       // TODO: Set something if current mission is not disruption.
     }
-  };
-
-  const autoUpdateMissionStates = function (log: string) {
-    console.log("Detect EE.log changes");
-    const result = parseLog(log);
-    console.log(result);
-    applyLog(result);
-  };
-
-  const handleRoundChange = function (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-    let round = parseInt(event.target.value);
-    round = round >= 1 ? round : 1;
-    const currentConduitIndex = (round - 1) * 4;
-    setConduitIndex(currentConduitIndex);
-    const newMissionState = _.cloneDeep(missionStates);
-    for (const mission of Object.values(newMissionState)) {
-      const currentLevel = calcCurrentLevel(
-        mission.startLevel,
-        currentConduitIndex
-      );
-      for (const demolisher of mission.demolishers) {
-        demolisher.currentLevel = currentLevel;
-      }
-    }
-    setMissionStates(newMissionState);
   };
 
   return (
