@@ -111,6 +111,7 @@ export const parseLog = function (data: string) {
           }
         }
       } else {
+        parseResult = { isDisruption: false };
         break;
       }
     } else if (regex.modeState.test(line)) {
@@ -122,6 +123,15 @@ export const parseLog = function (data: string) {
       } else if (modeState === ModeState.ARTIFACT_ROUND_DONE) {
         parseTotalConduitsComplete = false;
       }
+    } else if (regex.endOfMatch.test(line)) {
+      parseResult = { isDisruption: false };
+      break;
+    } else if (regex.missionFailed.test(line)) {
+      parseResult = { isDisruption: false };
+      break;
+    } else if (regex.abort.test(line)) {
+      parseResult = { isDisruption: false };
+      break;
     } else if (parseConduitInfo) {
       if (regex.startingDefence.test(line)) {
         // If the line matches to startingDefence, add demolisherName and conduit info to map.
