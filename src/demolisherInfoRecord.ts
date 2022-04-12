@@ -1,5 +1,5 @@
-import { DemolisherName } from "../DemolisherName";
-import { Faction } from "../Faction";
+import { DemolisherName } from "./DemolisherName";
+import { Faction } from "./Faction";
 
 interface DemolisherInfo {
   displayName: DemolisherName;

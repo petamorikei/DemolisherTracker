@@ -7,7 +7,7 @@ import {
   calcCurrentHealth,
   calcCurrentShield,
 } from "./calculator";
-import { demolisherInfoRecord } from "./database/demolisherInfoRecord";
+import { demolisherInfoRecord } from "./demolisherInfoRecord";
 
 export class Demolisher {
   static statusMultiplier = 1;

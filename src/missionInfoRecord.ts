@@ -1,5 +1,5 @@
-import { DemolisherName } from "../DemolisherName";
-import { MissionName } from "../MissionName";
+import { DemolisherName } from "./DemolisherName";
+import { MissionName } from "./MissionName";
 
 interface MissionInfo {
   name: MissionName;

@@ -1,4 +1,4 @@
-import { levelIncrease } from "./database/levelIncrease";
+import { levelIncrease } from "./levelIncrease";
 
 // Original enemy stats calculation:
 // https://warframe.fandom.com/wiki/Enemy_Level_Scaling

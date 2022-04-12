@@ -1,6 +1,6 @@
 import { Demolisher } from "./Demolisher";
 import { MissionName } from "./MissionName";
-import { missionInfoRecord } from "./database/missionInfoRecord";
+import { missionInfoRecord } from "./missionInfoRecord";
 import { MissionModeName } from "./missionModeName";
 
 export class Mission {

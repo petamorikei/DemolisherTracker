@@ -1,8 +1,8 @@
 import { Conduit, ConduitColor, ConduitIndex, ConduitState } from "./Conduit";
 import { DemolisherName } from "./DemolisherName";
 import { MissionName } from "./MissionName";
-import { demolisherInfoRecord } from "./database/demolisherInfoRecord";
-import { missionInfoRecord } from "./database/missionInfoRecord";
+import { demolisherInfoRecord } from "./demolisherInfoRecord";
+import { missionInfoRecord } from "./missionInfoRecord";
 import { MissionModeName } from "./missionModeName";
 import { regex } from "./regex";
 
