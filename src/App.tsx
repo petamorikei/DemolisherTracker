@@ -98,7 +98,6 @@ export function App() {
   const autoUpdateMissionStates = function (log: string) {
     console.log("Detect EE.log changes");
     const result = parseLog(log);
-    console.log(result);
     applyLog(result);
   };
 
@@ -148,7 +147,6 @@ export function App() {
         ].demolishers.find(
           (demolisher) => demolisher.displayName === conduit[0]
         );
-        console.log(demolisher);
         if (demolisher) {
           demolisher.currentLevel = currentLevel;
           demolisher.conduit = conduit[1];
