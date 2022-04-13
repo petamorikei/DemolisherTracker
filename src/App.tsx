@@ -27,6 +27,9 @@ export function App() {
   const [missionStates, setMissionStates] =
     React.useState<MissionRecord>(missionRecord);
 
+  /**
+   * Update state of mission name.
+   */
   const handleMissionNameChange = function (
     event: React.ChangeEvent<{ value: unknown }>
   ) {
@@ -37,7 +40,7 @@ export function App() {
 
   /**
    * Update state of mission mode.
-   * This also updates demolisher's parameter.
+   * This also updates demolisher's parameters.
    */
   const handleMissionModeChange = function (
     event: React.ChangeEvent<{ value: unknown }>
@@ -89,6 +92,19 @@ export function App() {
     setAutoMode(autoMode);
   };
 
+  /**
+   * Update mission states.
+   */
+  const autoUpdateMissionStates = function (log: string) {
+    console.log("Detect EE.log changes");
+    const result = parseLog(log);
+    console.log(result);
+    applyLog(result);
+  };
+
+  /**
+   * Update state of round.
+   */
   const handleRoundChange = function (
     event: React.ChangeEvent<HTMLInputElement>
   ) {
@@ -96,7 +112,6 @@ export function App() {
     round = round >= 1 ? round : 1;
     const currentConduitIndex = (round - 1) * 4;
     console.log(`Update round: ${round}`);
-    setConduitIndex(currentConduitIndex);
     const newMissionStates = _.cloneDeep(missionStates);
     for (const mission of Object.values(newMissionStates)) {
       const currentLevel = calcCurrentLevel(
@@ -107,22 +122,15 @@ export function App() {
         demolisher.currentLevel = currentLevel;
       }
     }
+    setConduitIndex(currentConduitIndex);
     setMissionStates(newMissionStates);
-  };
-
-  const autoUpdateMissionStates = function (log: string) {
-    console.log("Detect EE.log changes");
-    const result = parseLog(log);
-    console.log(result);
-    applyLog(result);
   };
 
   const applyLog = function (parseResult: ParseResult) {
     if (parseResult.isDisruption) {
-      const newMissionState = _.cloneDeep(missionStates);
-      setMissionName(parseResult.missionName);
-      Mission.missionMode = missionMode;
-      for (const mission of Object.values(newMissionState)) {
+      const newMissionStates = _.cloneDeep(missionStates);
+      Mission.missionMode = parseResult.missionMode;
+      for (const mission of Object.values(newMissionStates)) {
         mission.updateDemolisherStats();
       }
 
@@ -132,10 +140,10 @@ export function App() {
         .entries()) {
         const currentConduitIndex = (parseResult.round - 1) * 4 + index;
         const currentLevel = calcCurrentLevel(
-          missionStates[parseResult.missionName].startLevel,
+          newMissionStates[parseResult.missionName].startLevel,
           currentConduitIndex
         );
-        const demolisher = newMissionState[
+        const demolisher = newMissionStates[
           parseResult.missionName
         ].demolishers.find(
           (demolisher) => demolisher.displayName === conduit[0]
@@ -151,20 +159,21 @@ export function App() {
       const conduitDoneCountInRound = parseResult.conduits.size;
       const currentConduitIndex =
         (parseResult.round - 1) * 4 + conduitDoneCountInRound;
-      for (const demolisher of newMissionState[
+      for (const demolisher of newMissionStates[
         parseResult.missionName
       ].demolishers.filter(
         (demolisher) => demolisher.conduit.state === ConduitState.INACTIVE
       )) {
         demolisher.currentLevel = calcCurrentLevel(
-          missionStates[parseResult.missionName].startLevel,
+          newMissionStates[parseResult.missionName].startLevel,
           currentConduitIndex
         );
       }
 
+      setMissionName(parseResult.missionName);
       setMissionMode(parseResult.missionMode);
       setConduitIndex(currentConduitIndex);
-      setMissionStates(newMissionState);
+      setMissionStates(newMissionStates);
     } else {
       // TODO: Set something if current mission is not disruption.
     }
