@@ -91,26 +91,29 @@ export const parseLog = function (data: string) {
       // If the line matches to missionName, don't need to parse log anymore.
       const missionNameLog = line.split(": ")[3];
       if (latestMissionType === "MT_ARTIFACT") {
-        for (const missionInfo of Object.values(missionInfoRecord)) {
-          if (missionNameLog.startsWith(missionInfo.name)) {
-            const [missionName, missionMode] = missionNameLog.split(" - ");
-            parseResult = {
-              isDisruption: true,
-              missionName: missionName as MissionName,
-              missionMode:
-                missionMode === "Arbitration"
-                  ? MissionModeName.ARBIRATION
-                  : missionMode === "THE STEEL PATH"
-                  ? MissionModeName.THE_STEEL_PATH
-                  : MissionModeName.NORMAL,
-              round: round,
-              totalConduitsComplete: totalConduitsComplete,
-              conduits: conduitMap,
-            };
-            break;
-          }
+        const missionInfo = Object.values(missionInfoRecord).find(
+          (missionInfo) => missionNameLog.startsWith(missionInfo.name)
+        );
+        if (missionInfo) {
+          const [missionName, missionMode] = missionNameLog.split(" - ");
+          parseResult = {
+            isDisruption: true,
+            missionName: missionName as MissionName,
+            missionMode:
+              missionMode === "Arbitration"
+                ? MissionModeName.ARBIRATION
+                : missionMode === "THE STEEL PATH"
+                ? MissionModeName.THE_STEEL_PATH
+                : MissionModeName.NORMAL,
+            round: round,
+            totalConduitsComplete: totalConduitsComplete,
+            conduits: conduitMap,
+          };
+          console.log(parseResult);
         }
+        break;
       } else {
+        console.log(`Currently not in disruption: ${latestMissionType}`);
         parseResult = { isDisruption: false };
         break;
       }
@@ -124,18 +127,34 @@ export const parseLog = function (data: string) {
         parseTotalConduitsComplete = false;
       }
     } else if (regex.endOfMatch.test(line)) {
+      console.log(`Currently not in mission - Found EOM`);
       parseResult = { isDisruption: false };
       break;
     } else if (regex.missionFailed.test(line)) {
+      console.log(`Currently not in mission - Found failed`);
       parseResult = { isDisruption: false };
       break;
     } else if (regex.abort.test(line)) {
+      console.log(`Currently not in mission - Found abort`);
       parseResult = { isDisruption: false };
       break;
     } else if (parseConduitInfo) {
       if (regex.startingDefence.test(line)) {
         // If the line matches to startingDefence, add demolisherName and conduit info to map.
         const index = parseInt(line[line.length - 1]) as ConduitIndex;
+        const conduitColor =
+          latestConduitColor === ConduitColor.RED
+            ? "Red"
+            : latestConduitColor === ConduitColor.BLUE
+            ? "Blue"
+            : latestConduitColor === ConduitColor.CYAN
+            ? "Cyan"
+            : latestConduitColor === ConduitColor.WHITE
+            ? "White"
+            : "";
+        console.log(
+          `Found ${conduitColor} conduit activated: ${latestDemolisherName}`
+        );
         const conduit = new Conduit();
         conduit.color = latestConduitColor || undefined;
         conduit.index = index;
@@ -148,7 +167,7 @@ export const parseLog = function (data: string) {
           conduit
         );
       } else if (regex.completedDefence.test(line)) {
-        // If the line matches to completeDefence, add conduite state and its index to temporal map.
+        // If the line matches to completedDefence, add conduite state and its index to temporal map.
         const index = parseInt(line[line.length - 1]) as ConduitIndex;
         stateMap.set(index, ConduitState.COMPLETED);
       } else if (regex.debuff.test(line)) {
